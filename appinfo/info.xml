@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>files_external_script</id>
+	<name>Files against External Scripts</name>
+	<summary>Rule based processing of files through specified external scripts</summary>
+	<description>Pass files on to external scripts depending on a defined set of rules.</description>
+	<version>1.0.0</version>
+	<licence>agpl</licence>
+	<author mail="blizzz@arthur-schiwon.de">Arthur Schiwon</author>
+	<namespace>FilesExternalScript</namespace>
+	<category>files</category>
+	<category>tools</category>
+	<category>organization</category>
+	<website>https://github.com/nextcloud/files_external_script</website>
+	<bugs>https://github.com/nextcloud/files_external_script/issues</bugs>
+	<repository type="git">https://github.com/nextcloud/files_external_script.git</repository>
+	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/files_external_script/master/screenshots/settings.png">https://raw.githubusercontent.com/nextcloud/files_external_script/master/screenshots/settings-small.png</screenshot>
+	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/files_external_script/master/screenshots/example_rule-small.png">https://raw.githubusercontent.com/nextcloud/files_external_script/master/screenshots/example_rule.png</screenshot>
+	<dependencies>
+		<nextcloud min-version="15" max-version="15" />
+	</dependencies>
+	<settings>
+		<admin>OCA\FilesExternalScript\Settings\Admin</admin>
+		<admin-section>OCA\FilesExternalScript\Settings\Section</admin-section>
+	</settings>
+</info>
