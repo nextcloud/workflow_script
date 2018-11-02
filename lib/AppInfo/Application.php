@@ -21,9 +21,9 @@
  *
  */
 
-namespace OCA\FilesExternalScript\AppInfo;
+namespace OCA\WorkflowScript\AppInfo;
 
-use OCA\FilesExternalScript\Operation;
+use OCA\WorkflowScript\Operation;
 use OCP\AppFramework\QueryException;
 use OCP\Files\Folder;
 use OCP\Files\Node;
@@ -35,7 +35,7 @@ class Application extends \OCP\AppFramework\App {
 	 * Application constructor.
 	 */
 	public function __construct() {
-		parent::__construct('files_external_script');
+		parent::__construct('workflow_script');
 	}
 
 	protected function handleEvent(Node $node, string $eventName, array $extra = []) {
@@ -51,7 +51,7 @@ class Application extends \OCP\AppFramework\App {
 			$operation->considerScript($node, $eventName, $extra);
 		} catch (QueryException $e) {
 			$logger = $this->getContainer()->getServer()->getLogger();
-			$logger->logException($e, ['app' => 'files_external_script', 'level' => ILogger::ERROR]);
+			$logger->logException($e, ['app' => 'workflow_script', 'level' => ILogger::ERROR]);
 		}
 	}
 

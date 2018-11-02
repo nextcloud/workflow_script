@@ -21,5 +21,5 @@
  *
  */
 
-$app = new \OCA\FilesExternalScript\AppInfo\Application();
+$app = new \OCA\WorkflowScript\AppInfo\Application();
 $app->registerHooksAndListeners();

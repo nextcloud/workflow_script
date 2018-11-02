@@ -21,11 +21,11 @@
  *
  */
 
-namespace OCA\FilesExternalScript;
+namespace OCA\WorkflowScript;
 
 use OC\Files\Node\File;
 use OC\Files\Node\Folder;
-use OCA\FilesExternalScript\BackgroundJobs\Launcher;
+use OCA\WorkflowScript\BackgroundJobs\Launcher;
 use OCP\BackgroundJob\IJobList;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;

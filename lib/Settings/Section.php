@@ -21,7 +21,7 @@
  *
  */
 
-namespace OCA\FilesExternalScript\Settings;
+namespace OCA\WorkflowScript\Settings;
 
 use OCP\IL10N;
 use OCP\IURLGenerator;
@@ -45,7 +45,7 @@ class Section implements IIconSection {
 	 * @returns string
 	 */
 	public function getID() {
-		return 'files_external_script';
+		return 'workflow_script';
 	}
 
 	/**
@@ -73,6 +73,6 @@ class Section implements IIconSection {
 	 * {@inheritdoc}
 	 */
 	public function getIcon() {
-		return $this->url->imagePath('files_external_script', 'app-dark.svg');
+		return $this->url->imagePath('workflow_script', 'app-dark.svg');
 	}
 }

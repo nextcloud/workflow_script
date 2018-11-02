@@ -9,9 +9,9 @@ Tell us what should happen
 ### Actual behaviour
 Tell us what happens instead
 
-## Files External Script app
+## Workflow Script app
 
-**Files External Script app version:** (see apps admin page: `/index.php/settings/apps`)
+**Workflow Script app version:** (see apps admin page: `/index.php/settings/apps`)
 
 ## Server configuration
 <!--

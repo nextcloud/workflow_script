@@ -7,7 +7,7 @@ pipeline:
   syntax-php7.0:
     image: nextcloudci/php7.0:php7.0-19
     environment:
-    - APP_NAME=files_external_script
+    - APP_NAME=workflow_script
     - CORE_BRANCH=master
     - DB=sqlite
     commands:
@@ -23,7 +23,7 @@ pipeline:
   signed-off-check:
     image: nextcloudci/php7.0:php7.0-19
     environment:
-      - APP_NAME=files_external_script
+      - APP_NAME=workflow_script
       - CORE_BRANCH=master
       - DB=sqlite
     commands:
