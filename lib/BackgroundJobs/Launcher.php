@@ -21,7 +21,7 @@
  *
  */
 
-namespace OCA\FilesExternalScript\BackgroundJobs;
+namespace OCA\WorkflowScript\BackgroundJobs;
 
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
@@ -60,7 +60,7 @@ class Launcher extends \OC\BackgroundJob\QueuedJob {
 				$view = new \OC\Files\View(dirname($path));
 				$tmpFile = $view->toTmpFile(basename($path));
 			} catch (\Exception $e) {
-				$this->logger->logException($e, ['level' => ILogger::WARN, 'app' => 'files_external_script']);
+				$this->logger->logException($e, ['level' => ILogger::WARN, 'app' => 'workflow_script']);
 				return;
 			}
 			$command = str_replace('%f', escapeshellarg($tmpFile), $command);
@@ -71,7 +71,7 @@ class Launcher extends \OC\BackgroundJob\QueuedJob {
 		$wrapper = 'sh -c ' . escapeshellarg($command) . ' >/dev/null &';
 		$this->logger->info(
 			'executing {script}',
-			['app' => 'files_external_script', 'script' => $wrapper]
+			['app' => 'workflow_script', 'script' => $wrapper]
 		);
 		shell_exec($wrapper);
 	}

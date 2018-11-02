@@ -19,15 +19,15 @@
  */
 
 (function() {
-	OCA.FilesExternalScript = OCA.FilesExternalScript || {};
+	OCA.WorkflowScript = OCA.WorkflowScript || {};
 
 	/**
-	 * @class OCA.FilesExternalScript.Operation
+	 * @class OCA.WorkflowScript.Operation
 	 */
-	OCA.FilesExternalScript.Operation =
+	OCA.WorkflowScript.Operation =
 		OCA.WorkflowEngine.Operation.extend({
 			defaults: {
-				'class': 'OCA\\FilesExternalScript\\Operation',
+				'class': 'OCA\\WorkflowScript\\Operation',
 				'name': '',
 				'checks': [],
 				'operation': ''
@@ -35,45 +35,45 @@
 		});
 
 	/**
-	 * @class OCA.FilesExternalScript.OperationsCollection
+	 * @class OCA.WorkflowScript.OperationsCollection
 	 *
 	 * collection for all configured operations
 	 */
-	OCA.FilesExternalScript.OperationsCollection =
+	OCA.WorkflowScript.OperationsCollection =
 		OCA.WorkflowEngine.OperationsCollection.extend({
-			model: OCA.FilesExternalScript.Operation
+			model: OCA.WorkflowScript.Operation
 		});
 
 	/**
-	 * @class OCA.FilesExternalScript.OperationView
+	 * @class OCA.WorkflowScript.OperationView
 	 *
 	 * this creates the view for a single operation
 	 */
-	OCA.FilesExternalScript.OperationView =
+	OCA.WorkflowScript.OperationView =
 		OCA.WorkflowEngine.OperationView.extend({
-			model: OCA.FilesExternalScript.Operation,
+			model: OCA.WorkflowScript.Operation,
 			render: function() {
 				var $el = OCA.WorkflowEngine.OperationView.prototype.render.apply(this);
 				$el.find('input.operation-operation')
 					.css('width', '400px')
-					.attr("placeholder", t('files_external_script', 'command to execute'))
+					.attr("placeholder", t('workflow_script', 'command to execute'))
 			}
 		});
 
 	/**
-	 * @class OCA.FilesExternalScript.OperationsView
+	 * @class OCA.WorkflowScript.OperationsView
 	 *
 	 * this creates the view for configured operations
 	 */
-	OCA.FilesExternalScript.OperationsView =
+	OCA.WorkflowScript.OperationsView =
 		OCA.WorkflowEngine.OperationsView.extend({
 			initialize: function() {
 				OCA.WorkflowEngine.OperationsView.prototype.initialize.apply(this, [
-					'OCA\\FilesExternalScript\\Operation'
+					'OCA\\WorkflowScript\\Operation'
 				]);
 			},
 			renderOperation: function(operation) {
-				var subView = new OCA.FilesExternalScript.OperationView({
+				var subView = new OCA.WorkflowScript.OperationView({
 					model: operation
 				});
 
@@ -88,9 +88,9 @@
 $(document).ready(function() {
 	OC.SystemTags.collection.fetch({
 		success: function() {
-			new OCA.FilesExternalScript.OperationsView({
-				el: '#files_external_script .rules',
-				collection: new OCA.FilesExternalScript.OperationsCollection()
+			new OCA.WorkflowScript.OperationsView({
+				el: '#workflow_script .rules',
+				collection: new OCA.WorkflowScript.OperationsCollection()
 			});
 		}
 	});

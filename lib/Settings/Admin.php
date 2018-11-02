@@ -21,9 +21,9 @@
  *
  */
 
-namespace OCA\FilesExternalScript\Settings;
+namespace OCA\WorkflowScript\Settings;
 
-use OCA\FilesExternalScript\AppInfo\Application;
+use OCA\WorkflowScript\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IL10N;
 use OCP\Settings\ISettings;
@@ -68,7 +68,7 @@ class Admin implements ISettings {
 	 * @return string the section ID, e.g. 'sharing'
 	 */
 	public function getSection() {
-		return 'files_external_script';
+		return 'workflow_script';
 	}
 
 	/**
