@@ -4,8 +4,8 @@ clone:
     depth: 1
 
 pipeline:
-  syntax-php7.0:
-    image: nextcloudci/php7.0:php7.0-19
+  syntax-php7.1:
+    image: nextcloudci/php7.1:php7.1-16
     environment:
     - APP_NAME=workflow_script
     - CORE_BRANCH=master
@@ -19,24 +19,22 @@ pipeline:
     - ./lib/composer/bin/parallel-lint apps/$APP_NAME/
     when:
       matrix:
-        TESTS: syntax-php7.0
+        TESTS: syntax-php7.1
   signed-off-check:
-    image: nextcloudci/php7.0:php7.0-19
+    image: nextcloudci/php7.1:php7.1-16
     environment:
       - APP_NAME=workflow_script
       - CORE_BRANCH=master
       - DB=sqlite
     commands:
-      - wget https://raw.githubusercontent.com/nextcloud/travis_ci/master/before_install.sh
-      - bash ./before_install.sh $APP_NAME $CORE_BRANCH $DB
-      - cd ../server
-      - php ./build/signed-off-checker.php
+      - wget https://raw.githubusercontent.com/nextcloud/server/master/build/signed-off-checker.php
+      - php ./signed-off-checker.php
     secrets: [ github_token ]
     when:
       matrix:
-        include:
-        - TESTS: syntax-php7.0
         - TESTS: signed-off-check
+
 matrix:
   include:
+    - TESTS: syntax-php7.1
     - TESTS: signed-off-check
