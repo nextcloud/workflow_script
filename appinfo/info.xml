@@ -9,6 +9,9 @@
 	<licence>agpl</licence>
 	<author mail="blizzz@arthur-schiwon.de">Arthur Schiwon</author>
 	<namespace>WorkflowScript</namespace>
+	<types>
+		<filesystem/>
+	</types>
 	<category>files</category>
 	<category>tools</category>
 	<category>organization</category>
