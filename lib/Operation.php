@@ -61,7 +61,7 @@ class Operation implements IOperation {
 
 	public function considerScript(Node $node, string $event, array $extra = []) {
 		try {
-			$this->workflowEngineManager->setFileInfo($node->getStorage(), $node->getPath());
+			$this->workflowEngineManager->setFileInfo($node->getStorage(), $node->getInternalPath());
 			$matches = $this->workflowEngineManager->getMatchingOperations(Operation::class, false);
 			foreach ($matches as $match) {
 				$command = $this->buildCommand($match['operation'], $node, $event, $extra);
