@@ -58,7 +58,7 @@ class Admin implements ISettings {
 			'docs' => '',
 			'heading' => $this->l10n->t('External scripts'),
 			'settings-hint' => $this->l10n->t('Pass files to external scripts for processing outside of Nextcloud'),
-			'description' => $this->l10n->t('Each rule group consists of one or more rules. A request matches a group if all rules evaluate to true. When a file is created, written, deleted or renamed, the file is provided to the external script. If you do not use any of the following placeholders, the file path will be added to the provided command. Eventually the scripts are launched by a background job, but Nextcloud will not keep track of them are wait for their execution to finish.'),
+			'description' => $this->l10n->t('Each rule group consists of one or more rules. A request matches a group if all rules evaluate to true. When a file is created, written, deleted or renamed, the file is provided to the external script. If you do not use any of the following placeholders, the file path will be added to the provided command. Eventually the scripts are launched by a background job, but Nextcloud will not keep track of them or wait for their execution to finish.'),
 		];
 
 		return new TemplateResponse('workflowengine', 'admin', $parameters, 'blank');
