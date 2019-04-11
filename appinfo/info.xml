@@ -5,7 +5,7 @@
 	<name>Workflow external scripts</name>
 	<summary>Rule based processing of files through specified external scripts</summary>
 	<description>Pass files on to external scripts depending on a defined set of rules.</description>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<licence>agpl</licence>
 	<author mail="blizzz@arthur-schiwon.de">Arthur Schiwon</author>
 	<namespace>WorkflowScript</namespace>
@@ -21,7 +21,7 @@
 	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/settings-small.png">https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/settings.png</screenshot>
 	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/example_rule-small.png">https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/example_rule.png</screenshot>
 	<dependencies>
-		<nextcloud min-version="16" max-version="16" />
+		<nextcloud min-version="17" max-version="17" />
 	</dependencies>
 	<settings>
 		<admin>OCA\WorkflowScript\Settings\Admin</admin>
