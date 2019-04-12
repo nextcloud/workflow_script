@@ -5,7 +5,7 @@ steps:
   - name: syntax-php7.1
     image: nextcloudci/php7.1:php7.1-16
     environment:
-      APP_NAME: workflow_pdf_converter
+      APP_NAME: workflow_script
       CORE_BRANCH: master
       DB: sqlite
     commands:
