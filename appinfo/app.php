@@ -22,4 +22,3 @@
  */
 
 $app = new \OCA\WorkflowScript\AppInfo\Application();
-$app->registerHooksAndListeners();
