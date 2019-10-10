@@ -23,6 +23,10 @@
 
 namespace OCA\WorkflowScript\AppInfo;
 
+use OCA\WorkflowScript\Operation;
+use OCP\WorkflowEngine\IManager;
+use Symfony\Component\EventDispatcher\GenericEvent;
+
 class Application extends \OCP\AppFramework\App {
 
 	/**
@@ -30,6 +34,11 @@ class Application extends \OCP\AppFramework\App {
 	 */
 	public function __construct() {
 		parent::__construct('workflow_script');
+		\OC::$server->getEventDispatcher()->addListener(IManager::EVENT_NAME_REG_OPERATION, function (GenericEvent $event) {
+			$operation = \OC::$server->query(Operation::class);
+			$event->getSubject()->registerOperation($operation);
+			\OC_Util::addScript('workflow_script', 'admin');
+		});
 	}
 
 }
