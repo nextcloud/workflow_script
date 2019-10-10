@@ -21,31 +21,45 @@ var Component = {
 	name: 'WorkflowScript',
 	render: function (createElement) {
 		var self = this
-		return createElement('input', {
-			attrs: {
-				type: 'text'
-			},
-			domProps: {
-				value: self.value,
-				required: 'true'
-			},
+		return createElement('div', {
 			style: {
 				width: '100%'
 			},
-			on: {
-				input: function (event) {
-					self.value = event.target.value
-					self.$emit('input', event.target.value)
+		}, [
+			createElement('input', {
+				attrs: {
+					type: 'text'
+				},
+				domProps: {
+					value: self.value,
+					required: 'true'
+				},
+				style: {
+					width: '100%'
+				},
+				on: {
+					input: function (event) {
+						self.$emit('input', event.target.value)
+					}
 				}
-			}
-		})
+			}),
+			createElement('a', {
+				attrs: {
+					href: self.link
+				},
+				style: {
+					color: 'var(--color-text-maxcontrast)'
+				}
+			}, self.description)
+		])
 	},
 	props: {
 		value: ''
 	},
-	methods: {
-		update: function (value) {
-			this.$emit('input', value)
+	data: function () {
+		return {
+			description: t('workflow_script', 'Available placeholder variables are listed in the documentation') + '↗',
+			link: 'https://github.com/nextcloud/workflow_script#placeholders'
 		}
 	}
 };
