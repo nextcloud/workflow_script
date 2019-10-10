@@ -17,81 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
-(function() {
-	OCA.WorkflowScript = OCA.WorkflowScript || {};
-
-	/**
-	 * @class OCA.WorkflowScript.Operation
-	 */
-	OCA.WorkflowScript.Operation =
-		OCA.WorkflowEngine.Operation.extend({
-			defaults: {
-				'class': 'OCA\\WorkflowScript\\Operation',
-				'name': '',
-				'checks': [],
-				'operation': ''
-			}
-		});
-
-	/**
-	 * @class OCA.WorkflowScript.OperationsCollection
-	 *
-	 * collection for all configured operations
-	 */
-	OCA.WorkflowScript.OperationsCollection =
-		OCA.WorkflowEngine.OperationsCollection.extend({
-			model: OCA.WorkflowScript.Operation
-		});
-
-	/**
-	 * @class OCA.WorkflowScript.OperationView
-	 *
-	 * this creates the view for a single operation
-	 */
-	OCA.WorkflowScript.OperationView =
-		OCA.WorkflowEngine.OperationView.extend({
-			model: OCA.WorkflowScript.Operation,
-			render: function() {
-				var $el = OCA.WorkflowEngine.OperationView.prototype.render.apply(this);
-				$el.find('input.operation-operation')
-					.css('width', '400px')
-					.attr("placeholder", t('workflow_script', 'command to execute'))
-			}
-		});
-
-	/**
-	 * @class OCA.WorkflowScript.OperationsView
-	 *
-	 * this creates the view for configured operations
-	 */
-	OCA.WorkflowScript.OperationsView =
-		OCA.WorkflowEngine.OperationsView.extend({
-			initialize: function() {
-				OCA.WorkflowEngine.OperationsView.prototype.initialize.apply(this, [
-					'OCA\\WorkflowScript\\Operation'
-				]);
+var Component = {
+	name: 'WorkflowScript',
+	render: function (createElement) {
+		var self = this
+		return createElement('input', {
+			attrs: {
+				type: 'text'
 			},
-			renderOperation: function(operation) {
-				var subView = new OCA.WorkflowScript.OperationView({
-					model: operation
-				});
-
-				OCA.WorkflowEngine.OperationsView.prototype.renderOperation.apply(this, [
-					subView
-				]);
+			domProps: {
+				value: self.value,
+				required: 'true'
+			},
+			style: {
+				width: '100%'
+			},
+			on: {
+				input: function (event) {
+					self.value = event.target.value
+					self.$emit('input', event.target.value)
+				}
 			}
-		});
-})();
-
-
-$(document).ready(function() {
-	OC.SystemTags.collection.fetch({
-		success: function() {
-			new OCA.WorkflowScript.OperationsView({
-				el: '#workflow_script .rules',
-				collection: new OCA.WorkflowScript.OperationsCollection()
-			});
+		})
+	},
+	props: {
+		value: ''
+	},
+	methods: {
+		update: function (value) {
+			this.$emit('input', value)
 		}
-	});
+	}
+};
+
+OCA.WorkflowEngine.registerOperator({
+	id: 'OCA\\WorkflowScript\\Operation',
+	operation: '',
+	options: Component
 });
