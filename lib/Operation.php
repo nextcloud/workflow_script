@@ -27,6 +27,7 @@ use OC\Files\View;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
 use OCP\BackgroundJob\IJobList;
+use OCP\EventDispatcher\Event;
 use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
@@ -35,6 +36,7 @@ use OCP\Files\NotFoundException;
 use OCP\IL10N;
 use OCP\IUser;
 use OCP\IUserSession;
+use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
@@ -76,12 +78,12 @@ class Operation implements ISpecificOperation {
 		if (false && strpos($command, '%f')) {
 			try {
 				$view = new View($node->getParent()->getPath());
-				if($node instanceof Folder) {
+				if ($node instanceof Folder) {
 					$fullPath = $view->getLocalFolder($node->getPath());
 				} else {
 					$fullPath = $view->getLocalFile($node->getPath());
 				}
-				if($fullPath === null) {
+				if ($fullPath === null) {
 					throw new \InvalidArgumentException();
 				}
 				//$fullPath = $node->getParent()->getFullPath($node->getPath());
@@ -169,27 +171,40 @@ class Operation implements ISpecificOperation {
 		return $scope === IManager::SCOPE_ADMIN;
 	}
 
-	public function onEvent(string $eventName, GenericEvent $event, IRuleMatcher $ruleMatcher): void {
+	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
+		if (!$event instanceof GenericEvent && !$event instanceof MapperEvent) {
+			return;
+		}
 		try {
 			$extra = [];
-			if($eventName === '\OCP\Files::postRename') {
+			if ($eventName === '\OCP\Files::postRename') {
 				/** @var Node $oldNode */
-				list($oldNode, ) = $event->getSubject();
+				list($oldNode,) = $event->getSubject();
 				$extra = ['oldFilePath' => $oldNode->getPath()];
+			} else if ($event instanceof MapperEvent) {
+				if ($event->getObjectType() !== 'files') {
+					return;
+				}
+				$nodes = $this->rootFolder->getById($event->getObjectId());
+				if (!isset($nodes[0])) {
+					return;
+				}
+				$node = $nodes[0];
+				unset($nodes);
 			} else {
 				$node = $event->getSubject();
 			}
 			/** @var Node $node */
 
 			// '', admin, 'files', 'path/to/file.txt'
-			list(,, $folder,) = explode('/', $node->getPath(), 4);
-			if($folder !== 'files' || $node instanceof Folder) {
+			list(, , $folder,) = explode('/', $node->getPath(), 4);
+			if ($folder !== 'files' || $node instanceof Folder) {
 				return;
 			}
 
 			$matches = $ruleMatcher->getMatchingOperations(Operation::class, false);
 			foreach ($matches as $match) {
-				$command = $this->buildCommand($match['operation'], $node, $event, $extra);
+				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
 				$args = ['command' => $command];
 				if (strpos($command, '%f')) {
 					$args['path'] = $node->getPath();
