@@ -1,9 +1,9 @@
 kind: pipeline
-name: syntax-php7.1
+name: syntax-php7.3
 
 steps:
-  - name: syntax-php7.1
-    image: nextcloudci/php7.1:php7.1-16
+  - name: syntax-php7.3
+    image: nextcloudci/php7.3:php7.3-5
     environment:
       APP_NAME: workflow_script
       CORE_BRANCH: master
