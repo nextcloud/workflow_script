@@ -24,10 +24,8 @@
 namespace OCA\WorkflowScript\AppInfo;
 
 use OCA\WorkflowScript\Operation;
-use OCP\AppFramework\QueryException;
-use OCP\Files\Folder;
-use OCP\Files\Node;
-use OCP\ILogger;
+use OCP\WorkflowEngine\IManager;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class Application extends \OCP\AppFramework\App {
 
@@ -36,45 +34,11 @@ class Application extends \OCP\AppFramework\App {
 	 */
 	public function __construct() {
 		parent::__construct('workflow_script');
-	}
-
-	protected function handleEvent(Node $node, string $eventName, array $extra = []) {
-		// '', admin, 'files', 'path/to/file.txt'
-		list(,, $folder,) = explode('/', $node->getPath(), 4);
-		if($folder !== 'files' || $node instanceof Folder) {
-			return;
-		}
-
-		try {
-			$operation = $this->getContainer()->query(Operation::class);
-			/** @var Operation $operation */
-			$operation->considerScript($node, $eventName, $extra);
-		} catch (QueryException $e) {
-			$logger = $this->getContainer()->getServer()->getLogger();
-			$logger->logException($e, ['app' => 'workflow_script', 'level' => ILogger::ERROR]);
-		}
-	}
-
-	public function onCreate(Node $node) {
-		$this->handleEvent($node, 'create');
-	}
-
-	public function onUpdate(Node $node) {
-		$this->handleEvent($node, 'update');
-	}
-
-	public function onRename(Node $oldNode, Node $node) {
-		$this->handleEvent($node, 'rename', ['oldFilePath' => $oldNode->getPath()]);
-	}
-
-	/**
-	 * Register the app to several events
-	 */
-	public function registerHooksAndListeners() {
-		$root = $this->getContainer()->getServer()->getRootFolder();
-		$root->listen('\OC\Files', 'postCreate', [$this, 'onCreate']);
-		$root->listen('\OC\Files', 'postWrite', [$this, 'onUpdate']);
-		$root->listen('\OC\Files', 'postRename', [$this, 'onRename']);
+		\OC::$server->getEventDispatcher()->addListener(IManager::EVENT_NAME_REG_OPERATION, function (GenericEvent $event) {
+			$operation = \OC::$server->query(Operation::class);
+			$event->getSubject()->registerOperation($operation);
+			\OC_Util::addScript('workflow_script', 'admin');
+		});
 	}
 
 }

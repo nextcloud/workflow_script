@@ -23,8 +23,4 @@
 	<dependencies>
 		<nextcloud min-version="18" max-version="18" />
 	</dependencies>
-	<settings>
-		<admin>OCA\WorkflowScript\Settings\Admin</admin>
-		<admin-section>OCA\WorkflowScript\Settings\Section</admin-section>
-	</settings>
 </info>
