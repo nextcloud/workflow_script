@@ -2,6 +2,7 @@
 exclude = [
 	".drone.yml",
 	".git",
+	".gitkeep",
 	".github",
 	".tx",
 	"krankerl.toml",
