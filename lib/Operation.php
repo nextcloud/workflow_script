@@ -156,7 +156,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getDisplayName(): string {
-		return $this->l->t('External scripts');
+		return $this->l->t('Run script');
 	}
 
 	public function getDescription(): string {
