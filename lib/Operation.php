@@ -28,6 +28,7 @@ use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\GenericEvent;
 use OCP\Files\Folder;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
@@ -40,7 +41,7 @@ use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
 
 class Operation implements ISpecificOperation {
 
@@ -172,7 +173,9 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		if (!$event instanceof GenericEvent && !$event instanceof MapperEvent) {
+		if (!$event instanceof GenericEvent
+			&& !$event instanceof LegacyGenericEvent
+			&& !$event instanceof MapperEvent) {
 			return;
 		}
 		try {
@@ -202,7 +205,7 @@ class Operation implements ISpecificOperation {
 				return;
 			}
 
-			$matches = $ruleMatcher->getMatchingOperations(Operation::class, false);
+			$matches = $ruleMatcher->getFlows(false);
 			foreach ($matches as $match) {
 				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
 				$args = ['command' => $command];
