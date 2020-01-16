@@ -21,4 +21,4 @@
  *
  */
 
-$app = new \OCA\WorkflowScript\AppInfo\Application();
+$app = \OC::$server->query(\OCA\WorkflowScript\AppInfo\Application::class);

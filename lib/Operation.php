@@ -202,7 +202,7 @@ class Operation implements ISpecificOperation {
 				return;
 			}
 
-			$matches = $ruleMatcher->getMatchingOperations(Operation::class, false);
+			$matches = $ruleMatcher->getFlows(false);
 			foreach ($matches as $match) {
 				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
 				$args = ['command' => $command];
