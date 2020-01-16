@@ -19,8 +19,7 @@
 	<website>https://github.com/nextcloud/workflow_script</website>
 	<bugs>https://github.com/nextcloud/workflow_script/issues</bugs>
 	<repository type="git">https://github.com/nextcloud/workflow_script.git</repository>
-	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/settings-small.png">https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/settings.png</screenshot>
-	<screenshot small-thumbnail="https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/example_rule-small.png">https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/example_rule.png</screenshot>
+	<screenshot>https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/flow-ui.png</screenshot>
 	<dependencies>
 		<nextcloud min-version="18" max-version="18" />
 	</dependencies>
