@@ -182,7 +182,7 @@ class Operation implements ISpecificOperation {
 			$extra = [];
 			if ($eventName === '\OCP\Files::postRename') {
 				/** @var Node $oldNode */
-				list($oldNode,) = $event->getSubject();
+				list($oldNode, $node) = $event->getSubject();
 				$extra = ['oldFilePath' => $oldNode->getPath()];
 			} else if ($event instanceof MapperEvent) {
 				if ($event->getObjectType() !== 'files') {
