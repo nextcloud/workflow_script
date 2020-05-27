@@ -1,6 +1,7 @@
 .drone.yml
 .git
 .github
+.gitignore
 krankerl.toml
 l10n/.gitkeep
 .nextcloudignore
