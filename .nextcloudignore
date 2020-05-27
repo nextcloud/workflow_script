@@ -1,0 +1,10 @@
+.drone.yml
+.git
+.github
+krankerl.toml
+l10n/.gitkeep
+.nextcloudignore
+README.md
+screenshots
+tests
+.tx
