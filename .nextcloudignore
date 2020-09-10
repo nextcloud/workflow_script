@@ -1,3 +1,4 @@
+composer.*
 .drone.yml
 .git
 .github
