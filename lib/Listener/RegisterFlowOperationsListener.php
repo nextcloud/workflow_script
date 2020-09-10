@@ -1,6 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * @copyright Copyright (c) 2018 Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @copyright Copyright (c) 2020 Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
  * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
@@ -21,28 +23,33 @@
  *
  */
 
-namespace OCA\WorkflowScript\AppInfo;
+namespace OCA\WorkflowScript\Listener;
 
-use OCA\WorkflowScript\Listener\RegisterFlowOperationsListener;
-use OCP\AppFramework\App;
-use OCP\AppFramework\Bootstrap\IBootContext;
-use OCP\AppFramework\Bootstrap\IBootstrap;
-use OCP\AppFramework\Bootstrap\IRegistrationContext;
+use OCA\WorkflowScript\Operation;
+use OCP\EventDispatcher\Event;
+use OCP\EventDispatcher\IEventListener;
+use OCP\IServerContainer;
+use OCP\Util;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
-class Application extends App implements IBootstrap {
+class RegisterFlowOperationsListener implements IEventListener {
+
+	/** @var IServerContainer */
+	private $container;
+
+	public function __construct(IServerContainer $container) {
+		$this->container = $container;
+	}
 
 	/**
-	 * Application constructor.
+	 * @inheritDoc
 	 */
-	public function __construct() {
-		parent::__construct('workflow_script');
-	}
-
-	public function register(IRegistrationContext $context): void {
-		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
-	}
-
-	public function boot(IBootContext $context): void {
+	public function handle(Event $event): void {
+		if (!$event instanceof RegisterOperationsEvent) {
+			return;
+		}
+		$operation = $this->container->get(Operation::class);
+		$event->registerOperation($operation);
+		Util::addScript('workflow_script', 'admin');
 	}
 }
