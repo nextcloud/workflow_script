@@ -1,0 +1,5 @@
+{
+    "require-dev": {
+        "php-parallel-lint/php-parallel-lint": "^1.2"
+    }
+}
