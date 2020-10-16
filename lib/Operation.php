@@ -23,6 +23,7 @@
 
 namespace OCA\WorkflowScript;
 
+use OC\Config;
 use OC\Files\View;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
@@ -34,6 +35,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\Filesystem;
 use OCP\IL10N;
 use OCP\IUser;
 use OCP\IUserSession;
@@ -73,7 +75,18 @@ class Operation implements ISpecificOperation {
 
 		if (strpos($command, '%n')) {
 			// Nextcloud relative-path
-			$command = str_replace('%n', escapeshellarg($node->getPath()), $command);
+                        $nodeID = -1;
+                        try {
+                                $nodeID = $node->getId();
+                        } catch (InvalidPathException $e) {
+                        } catch (NotFoundException $e) {
+                        }
+                        $config = new Config('config/');
+                        $base_path = $config->getValue('datadirectory');
+
+                        $path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+                        $command = str_replace('%n', escapeshellarg(str_replace($base_path . '/','',$path)), $command);
+
 		}
 
 		if (false && strpos($command, '%f')) {
