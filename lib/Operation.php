@@ -23,8 +23,8 @@
 
 namespace OCA\WorkflowScript;
 
-use OC\Config;
 use OC\Files\View;
+use OC\Files\Filesystem;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
 use OCP\BackgroundJob\IJobList;
@@ -35,10 +35,10 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
-use OCP\Files\Filesystem;
 use OCP\IL10N;
 use OCP\IUser;
 use OCP\IUserSession;
+use OCP\IConfig;
 use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
@@ -57,13 +57,16 @@ class Operation implements ISpecificOperation {
 	private $session;
 	/** @var IRootFolder */
 	private $rootFolder;
+	/** @var IConfig */
+	private $config;
 
-	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder) {
+	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder, IConfig $config) {
 		$this->workflowEngineManager = $workflowEngineManager;
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->session = $session;
 		$this->rootFolder = $rootFolder;
+		$this->config = $config;
 	}
 
 	protected function buildCommand(string $template, Node $node, string $event, array $extra = []) {
@@ -80,13 +83,12 @@ class Operation implements ISpecificOperation {
                                 $nodeID = $node->getId();
                         } catch (InvalidPathException $e) {
                         } catch (NotFoundException $e) {
-                        }
-                        $config = new Config('config/');
-                        $base_path = $config->getValue('datadirectory');
-
-                        $path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
-                        $command = str_replace('%n', escapeshellarg(str_replace($base_path . '/','',$path)), $command);
-
+						}
+					
+						$base_path = $this->config->getSystemValue('datadirectory');
+					
+						$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+						$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/','',$path)), $command);
 		}
 
 		if (false && strpos($command, '%f')) {
