@@ -83,12 +83,12 @@ class Operation implements ISpecificOperation {
                                 $nodeID = $node->getId();
                         } catch (InvalidPathException $e) {
                         } catch (NotFoundException $e) {
-						}
+			}
 					
-						$base_path = $this->config->getSystemValue('datadirectory');
+			$base_path = $this->config->getSystemValue('datadirectory');
 					
-						$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
-						$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/','',$path)), $command);
+			$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+			$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/','',$path)), $command);
 		}
 
 		if (false && strpos($command, '%f')) {
