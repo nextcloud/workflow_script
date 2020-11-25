@@ -23,6 +23,7 @@
 
 namespace OCA\WorkflowScript;
 
+use OC\Files\Filesystem;
 use OC\Files\View;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
@@ -34,6 +35,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IUser;
 use OCP\IUserSession;
@@ -55,13 +57,16 @@ class Operation implements ISpecificOperation {
 	private $session;
 	/** @var IRootFolder */
 	private $rootFolder;
+	/** @var IConfig */
+	private $config;
 
-	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder) {
+	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder, IConfig $config) {
 		$this->workflowEngineManager = $workflowEngineManager;
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->session = $session;
 		$this->rootFolder = $rootFolder;
+		$this->config = $config;
 	}
 
 	protected function buildCommand(string $template, Node $node, string $event, array $extra = []) {
@@ -73,7 +78,17 @@ class Operation implements ISpecificOperation {
 
 		if (strpos($command, '%n')) {
 			// Nextcloud relative-path
-			$command = str_replace('%n', escapeshellarg($node->getPath()), $command);
+			$nodeID = -1;
+			try {
+				$nodeID = $node->getId();
+			} catch (InvalidPathException $e) {
+			} catch (NotFoundException $e) {
+			}
+
+			$base_path = $this->config->getSystemValue('datadirectory');
+
+			$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+			$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/', '', $path)), $command);
 		}
 
 		if (false && strpos($command, '%f')) {
