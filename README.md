@@ -4,7 +4,7 @@ This app enables Nextcloud to pass on files to external scripts when they were c
 
 Learn more about workflows on https://nextcloud.com/workflow
 
-![The settings screen](./screenshots/settings.png)
+![The settings screen](./screenshots/flow-ui.png)
 
 ## Placeholders
 
