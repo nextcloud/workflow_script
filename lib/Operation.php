@@ -76,7 +76,7 @@ class Operation implements ISpecificOperation {
 			$command = str_replace('%n', escapeshellarg($node->getPath()), $command);
 		}
 
-		if (false && strpos($command, '%f')) {
+		if (strpos($command, '%f')) {
 			try {
 				$view = new View($node->getParent()->getPath());
 				if ($node instanceof Folder) {
