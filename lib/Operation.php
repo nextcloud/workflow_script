@@ -91,9 +91,9 @@ class Operation implements ISpecificOperation {
 			$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/', '', $path)), $command);
 		}
 
-		if (false && strpos($command, '%f')) {
+		if (strpos($command, '%f')) {
 			try {
-				$view = new View($node->getParent()->getPath());
+				$view = new View();
 				if ($node instanceof Folder) {
 					$fullPath = $view->getLocalFolder($node->getPath());
 				} else {
@@ -102,7 +102,6 @@ class Operation implements ISpecificOperation {
 				if ($fullPath === null) {
 					throw new \InvalidArgumentException();
 				}
-				//$fullPath = $node->getParent()->getFullPath($node->getPath());
 				$command = str_replace('%f', escapeshellarg($fullPath), $command);
 			} catch (\Exception $e) {
 				throw new \InvalidArgumentException('Could not determine full path');
