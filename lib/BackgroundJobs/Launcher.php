@@ -23,14 +23,16 @@
 
 namespace OCA\WorkflowScript\BackgroundJobs;
 
+use Exception;
+use OC\BackgroundJob\QueuedJob;
+use OC\Files\View;
 use OCP\Files\IRootFolder;
-use OCP\Files\NotFoundException;
-use OCP\ILogger;
 use OCP\ITempManager;
+use Psr\Log\LoggerInterface;
 
-class Launcher extends \OC\BackgroundJob\QueuedJob {
+class Launcher extends QueuedJob {
 
-	/** @var ILogger */
+	/** @var LoggerInterface */
 	protected $logger;
 	/** @var ITempManager */
 	private $tempManager;
@@ -40,9 +42,9 @@ class Launcher extends \OC\BackgroundJob\QueuedJob {
 	/**
 	 * BackgroundJob constructor.
 	 *
-	 * @param ILogger $logger
+	 * @param LoggerInterface $logger
 	 */
-	public function __construct(ILogger $logger, ITempManager $tempManager, IRootFolder $rootFolder) {
+	public function __construct(LoggerInterface $logger, ITempManager $tempManager, IRootFolder $rootFolder) {
 		$this->logger = $logger;
 		$this->tempManager = $tempManager;
 		$this->rootFolder = $rootFolder;
@@ -54,13 +56,16 @@ class Launcher extends \OC\BackgroundJob\QueuedJob {
 	protected function run($argument) {
 		$command = (string)$argument['command'];
 
-		if(strpos($command, '%f')) {
+		if (strpos($command, '%f')) {
 			$path = isset($argument['path']) ? (string)$argument['path'] : '';
 			try {
-				$view = new \OC\Files\View(dirname($path));
+				$view = new View(dirname($path));
 				$tmpFile = $view->toTmpFile(basename($path));
-			} catch (\Exception $e) {
-				$this->logger->logException($e, ['level' => ILogger::WARN, 'app' => 'workflow_script']);
+			} catch (Exception $e) {
+				$this->logger->warning($e->getMessage(), [
+					'app' => 'workflow_script',
+					'exception' => $e
+				]);
 				return;
 			}
 			$command = str_replace('%f', escapeshellarg($tmpFile), $command);
