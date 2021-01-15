@@ -23,6 +23,9 @@
 
 namespace OCA\WorkflowScript;
 
+use Exception;
+use InvalidArgumentException;
+use OC;
 use OC\Files\Filesystem;
 use OC\Files\View;
 use OCA\WorkflowEngine\Entity\File;
@@ -44,6 +47,7 @@ use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
+use UnexpectedValueException;
 
 class Operation implements ISpecificOperation {
 
@@ -69,6 +73,92 @@ class Operation implements ISpecificOperation {
 		$this->config = $config;
 	}
 
+	/**
+	 * @throws UnexpectedValueException
+	 * @since 9.1
+	 */
+	public function validateOperation(string $name, array $checks, string $operation): void {
+		if (empty($operation)) {
+			throw new UnexpectedValueException($this->l->t('Please provide a script name'));
+		}
+
+		$scriptName = explode(' ', $operation, 2)[0];
+		if (!$this->isScriptValid($scriptName)) {
+			throw new UnexpectedValueException($this->l->t('The script does not seem to be executable'));
+		}
+	}
+
+	protected function isScriptValid(string $scriptName): bool {
+		$which = shell_exec('command -v ' . escapeshellarg($scriptName));
+		if (!empty($which)) {
+			return true;
+		}
+
+		return is_executable($scriptName);
+	}
+
+	public function getDisplayName(): string {
+		return $this->l->t('Run script');
+	}
+
+	public function getDescription(): string {
+		return $this->l->t('Pass files to external scripts for processing outside of Nextcloud');
+	}
+
+	public function getIcon(): string {
+		return OC::$server->getURLGenerator()->imagePath('workflow_script', 'app.svg');
+	}
+
+	public function isAvailableForScope(int $scope): bool {
+		return $scope === IManager::SCOPE_ADMIN;
+	}
+
+	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
+		if (!$event instanceof GenericEvent
+			&& !$event instanceof LegacyGenericEvent
+			&& !$event instanceof MapperEvent) {
+			return;
+		}
+		try {
+			$extra = [];
+			if ($eventName === '\OCP\Files::postRename') {
+				/** @var Node $oldNode */
+				[$oldNode, $node] = $event->getSubject();
+				$extra = ['oldFilePath' => $oldNode->getPath()];
+			} elseif ($event instanceof MapperEvent) {
+				if ($event->getObjectType() !== 'files') {
+					return;
+				}
+				$nodes = $this->rootFolder->getById($event->getObjectId());
+				if (!isset($nodes[0])) {
+					return;
+				}
+				$node = $nodes[0];
+				unset($nodes);
+			} else {
+				$node = $event->getSubject();
+			}
+			/** @var Node $node */
+
+			// '', admin, 'files', 'path/to/file.txt'
+			[, , $folder,] = explode('/', $node->getPath(), 4);
+			if ($folder !== 'files' || $node instanceof Folder) {
+				return;
+			}
+
+			$matches = $ruleMatcher->getFlows(false);
+			foreach ($matches as $match) {
+				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
+				$args = ['command' => $command];
+				if (strpos($command, '%f')) {
+					$args['path'] = $node->getPath();
+				}
+				$this->jobList->add(Launcher::class, $args);
+			}
+		} catch (NotFoundException $e) {
+		}
+	}
+
 	protected function buildCommand(string $template, Node $node, string $event, array $extra = []) {
 		$command = $template;
 
@@ -81,13 +171,16 @@ class Operation implements ISpecificOperation {
 			$nodeID = -1;
 			try {
 				$nodeID = $node->getId();
-			} catch (InvalidPathException $e) {
-			} catch (NotFoundException $e) {
+			} catch (InvalidPathException | NotFoundException $e) {
+				throw new InvalidArgumentException('', 0, $e);
 			}
 
 			$base_path = $this->config->getSystemValue('datadirectory');
-
-			$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+			try {
+				$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
+			} catch (NotFoundException $e) {
+				throw new InvalidArgumentException('', 0, $e);
+			}
 			$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/', '', $path)), $command);
 		}
 
@@ -100,11 +193,11 @@ class Operation implements ISpecificOperation {
 					$fullPath = $view->getLocalFile($node->getPath());
 				}
 				if ($fullPath === null) {
-					throw new \InvalidArgumentException();
+					throw new InvalidArgumentException();
 				}
 				$command = str_replace('%f', escapeshellarg($fullPath), $command);
-			} catch (\Exception $e) {
-				throw new \InvalidArgumentException('Could not determine full path');
+			} catch (Exception $e) {
+				throw new InvalidArgumentException('Could not determine full path');
 			}
 		}
 
@@ -112,8 +205,7 @@ class Operation implements ISpecificOperation {
 			$nodeID = -1;
 			try {
 				$nodeID = $node->getId();
-			} catch (InvalidPathException $e) {
-			} catch (NotFoundException $e) {
+			} catch (InvalidPathException | NotFoundException $e) {
 			}
 			$command = str_replace('%i', escapeshellarg($nodeID), $command);
 		}
@@ -144,92 +236,6 @@ class Operation implements ISpecificOperation {
 		}
 
 		return $command;
-	}
-
-	/**
-	 * @throws \UnexpectedValueException
-	 * @since 9.1
-	 */
-	public function validateOperation(string $name, array $checks, string $operation): void {
-		if (empty($operation)) {
-			throw new \UnexpectedValueException($this->l->t('Please provide a script name'));
-		}
-
-		$scriptName = explode(' ', $operation, 2)[0];
-		if (!$this->isScriptValid($scriptName)) {
-			throw new \UnexpectedValueException($this->l->t('The script does not seem to be executable'));
-		}
-	}
-
-	protected function isScriptValid(string $scriptName) {
-		$which = shell_exec('command -v ' . escapeshellarg($scriptName));
-		if (!empty($which)) {
-			return true;
-		}
-
-		return is_executable($scriptName);
-	}
-
-	public function getDisplayName(): string {
-		return $this->l->t('Run script');
-	}
-
-	public function getDescription(): string {
-		return $this->l->t('Pass files to external scripts for processing outside of Nextcloud');
-	}
-
-	public function getIcon(): string {
-		return \OC::$server->getURLGenerator()->imagePath('workflow_script', 'app.svg');
-	}
-
-	public function isAvailableForScope(int $scope): bool {
-		return $scope === IManager::SCOPE_ADMIN;
-	}
-
-	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
-		if (!$event instanceof GenericEvent
-			&& !$event instanceof LegacyGenericEvent
-			&& !$event instanceof MapperEvent) {
-			return;
-		}
-		try {
-			$extra = [];
-			if ($eventName === '\OCP\Files::postRename') {
-				/** @var Node $oldNode */
-				list($oldNode, $node) = $event->getSubject();
-				$extra = ['oldFilePath' => $oldNode->getPath()];
-			} else if ($event instanceof MapperEvent) {
-				if ($event->getObjectType() !== 'files') {
-					return;
-				}
-				$nodes = $this->rootFolder->getById($event->getObjectId());
-				if (!isset($nodes[0])) {
-					return;
-				}
-				$node = $nodes[0];
-				unset($nodes);
-			} else {
-				$node = $event->getSubject();
-			}
-			/** @var Node $node */
-
-			// '', admin, 'files', 'path/to/file.txt'
-			list(, , $folder,) = explode('/', $node->getPath(), 4);
-			if ($folder !== 'files' || $node instanceof Folder) {
-				return;
-			}
-
-			$matches = $ruleMatcher->getFlows(false);
-			foreach ($matches as $match) {
-				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
-				$args = ['command' => $command];
-				if (strpos($command, '%f')) {
-					$args['path'] = $node->getPath();
-				}
-				$this->jobList->add(Launcher::class, $args);
-			}
-		} catch (NotFoundException $e) {
-		}
 	}
 
 	public function getEntityId(): string {

@@ -6,6 +6,7 @@ composer.*
 krankerl.toml
 l10n/.gitkeep
 .nextcloudignore
+.php_cs.dist
 README.md
 screenshots
 tests

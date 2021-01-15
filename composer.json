@@ -1,5 +1,17 @@
 {
-    "require-dev": {
-        "php-parallel-lint/php-parallel-lint": "^1.2"
-    }
+	"autoload-dev": {
+		"psr-4": {
+			"OCP\\": "vendor/christophwurst/nextcloud/OCP",
+			"OCA\\WorkflowScript\\": "lib/"
+		}
+	},
+	"scripts": {
+		"cs:check": "php-cs-fixer fix --dry-run --diff",
+		"cs:fix": "php-cs-fixer fix",
+		"lint": "find . -name \\*.php -not -path './vendor/*' -not -path './build/*' -not -path './tests/integration/vendor/*' -print0 | xargs -0 -n1 php -l"
+	},
+	"require-dev": {
+		"nextcloud/coding-standard": "^0.5.0",
+		"christophwurst/nextcloud": "dev-master"
+	}
 }
