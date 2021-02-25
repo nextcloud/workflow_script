@@ -26,10 +26,13 @@ namespace OCA\WorkflowScript;
 use Exception;
 use InvalidArgumentException;
 use OC;
-use OC\Files\Filesystem;
 use OC\Files\View;
+use OC\User\NoUserException;
+use OCA\Files_Sharing\SharedStorage;
+use OCA\GroupFolders\Mount\GroupFolderStorage;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
+use OCA\WorkflowScript\Exception\PlaceholderNotSubstituted;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
@@ -38,6 +41,7 @@ use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IUser;
@@ -46,6 +50,7 @@ use OCP\SystemTag\MapperEvent;
 use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
 use UnexpectedValueException;
 
@@ -63,14 +68,25 @@ class Operation implements ISpecificOperation {
 	private $rootFolder;
 	/** @var IConfig */
 	private $config;
+	/** @var LoggerInterface */
+	private $logger;
 
-	public function __construct(IManager $workflowEngineManager, IJobList $jobList, IL10N $l, IUserSession $session, IRootFolder $rootFolder, IConfig $config) {
+	public function __construct(
+		IManager $workflowEngineManager,
+		IJobList $jobList,
+		IL10N $l,
+		IUserSession $session,
+		IRootFolder $rootFolder,
+		IConfig $config,
+		LoggerInterface $logger
+	) {
 		$this->workflowEngineManager = $workflowEngineManager;
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->session = $session;
 		$this->rootFolder = $rootFolder;
 		$this->config = $config;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -148,7 +164,20 @@ class Operation implements ISpecificOperation {
 
 			$matches = $ruleMatcher->getFlows(false);
 			foreach ($matches as $match) {
-				$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
+				try {
+					$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
+				} catch (PlaceholderNotSubstituted $e) {
+					$this->logger->warning(
+						'Could not substitute {placeholder} in {command} with node {node}',
+						[
+							'app' => 'workflow_script',
+							'placeholder' => $e->getPlaceholder(),
+							'command' => $match['operation'],
+							'node' => $node,
+							'exception' => $e,
+						]
+					);
+				}
 				$args = ['command' => $command];
 				if (strpos($command, '%f')) {
 					$args['path'] = $node->getPath();
@@ -159,6 +188,9 @@ class Operation implements ISpecificOperation {
 		}
 	}
 
+	/**
+	 * @throws PlaceholderNotSubstituted
+	 */
 	protected function buildCommand(string $template, Node $node, string $event, array $extra = []) {
 		$command = $template;
 
@@ -168,20 +200,9 @@ class Operation implements ISpecificOperation {
 
 		if (strpos($command, '%n')) {
 			// Nextcloud relative-path
-			$nodeID = -1;
-			try {
-				$nodeID = $node->getId();
-			} catch (InvalidPathException | NotFoundException $e) {
-				throw new InvalidArgumentException('', 0, $e);
-			}
-
-			$base_path = $this->config->getSystemValue('datadirectory');
-			try {
-				$path = Filesystem::getLocalFile(Filesystem::getPath($nodeID));
-			} catch (NotFoundException $e) {
-				throw new InvalidArgumentException('', 0, $e);
-			}
-			$command = str_replace('%n', escapeshellarg(str_replace($base_path . '/', '', $path)), $command);
+			$ncRelPath = $this->replacePlaceholderN($node);
+			$command = str_replace('%n', escapeshellarg($ncRelPath), $command);
+			unset($ncRelPath);
 		}
 
 		if (strpos($command, '%f')) {
@@ -236,6 +257,77 @@ class Operation implements ISpecificOperation {
 		}
 
 		return $command;
+	}
+
+	/**
+	 * @throws PlaceholderNotSubstituted
+	 */
+	protected function replacePlaceholderN(Node $node): string {
+		$owner = $node->getOwner();
+		try {
+			$nodeID = $node->getId();
+			$storage = $node->getStorage();
+		} catch (NotFoundException | InvalidPathException $e) {
+			$context = [
+				'app' => 'workflow_script',
+				'exception' => $e,
+				'node' => $node,
+			];
+			$message = 'Could not get if of node {node}';
+			if (isset($nodeID)) {
+				$message = 'Could not find storage for file ID {fid}, node: {node}';
+				$context['fid'] = $nodeID;
+			}
+
+			$this->logger->warning($message, $context);
+			throw new PlaceholderNotSubstituted('n', $e);
+		}
+
+		if (isset($storage) && $storage->instanceOfStorage(GroupFolderStorage::class)) {
+			// group folders are always located within $DATADIR/__groupfolders/
+			$absPath = $storage->getLocalFile($node->getPath());
+			$pos = strpos($absPath, '/__groupfolders/');
+			// if the string cannot be found, the fallback is absolute path
+			// it should never happen #famousLastWords
+			if ($pos === false) {
+				$this->logger->warning(
+					'Groupfolder path does not contain __groupfolders. File ID: {fid}, Node path: {path}, absolute path: {abspath}',
+					[
+						'app' => 'workflow_script',
+						'fid' => $nodeID,
+						'path' => $node->getPath(),
+						'abspath' => $absPath,
+					]
+				);
+			}
+			$ncRelPath = substr($absPath, (int)$pos);
+		} elseif (isset($storage) && $storage->instanceOfStorage(SharedStorage::class)) {
+			try {
+				$folder = $this->rootFolder->getUserFolder($owner->getUID());
+			} catch (NotPermittedException | NoUserException $e) {
+				throw new PlaceholderNotSubstituted('n', $e);
+			}
+			$nodes = $folder->getById($nodeID);
+			if (empty($nodes)) {
+				throw new PlaceholderNotSubstituted('n');
+			}
+			$newNode = array_shift($nodes);
+			$ncRelPath = $newNode->getPath();
+		} else {
+			$ncRelPath = $node->getPath();
+			if (strpos($node->getPath(), $owner->getUID()) !== 0) {
+				$nodes = $this->rootFolder->getById($nodeID);
+				foreach ($nodes as $testNode) {
+					if (strpos($node->getPath(), $owner->getUID()) === 0) {
+						$ncRelPath = $testNode;
+						break;
+					}
+				}
+			}
+		}
+		$ncRelPath = ltrim($ncRelPath, '/');
+
+		return $ncRelPath;
 	}
 
 	public function getEntityId(): string {
