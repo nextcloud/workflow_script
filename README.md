@@ -14,15 +14,29 @@ When defining the script, you can specify one of the following placeholders that
 
 | Placeholder | Description | example value
 --- | --- | ---
-%e | the event type | *create*, *update* or *rename*
+%e | the event type | *\OCP\Files::postCreate*, *\OCP\Files::postWrite* or *\OCP\Files::postRename*
 %i | file id | *142430*
 %a | actor's user id | *bob*
 %o | owner's user id | *alice*
 %n | nextcloud-relative path | *alice/files/Pictures/Wonderland/20180717_192103.jpg*
 %f | locally available file | */tmp/oc_tmp_m6E6OO-.jpg*
-%x | old nextcloud-relative file path (only on *rename*) | *alice/files/Workbench/20180717_192103.jpg*
+%x | old nextcloud-relative file path (only on *rename* and *copy*) | *alice/files/Workbench/20180717_192103.jpg*
 
 When no placeholder was specified, then the exact command as given is being executed.
+
+### Hints
+
+Events for files and folders are triggered by file system operations. An operation like
+\OCP\Files::postCopy is read, create and write a file. 
+
+| Action | Events |
+| --- | --- |
+| Copy file | \OCP\Files::postCopy<br />\OCP\Files::postCreate<br />\OCP\Files::postWrite
+| Create file | \OCP\Files::postTouch<br />\OCP\Files::postCreate<br /> \OCP\Files::postWrite
+| Delete file | \OCP\Files::postDelete
+| Move file | \OCP\Files::postRename
+| Rename file | \OCP\Files::postRename
+| Update file | \OCP\Files::postWrite
 
 ### Example
 
