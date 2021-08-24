@@ -48,7 +48,8 @@
 				}),
 				createElement('a', {
 					attrs: {
-						href: self.link
+						href: self.link,
+						target: '_blank'
 					},
 					style: {
 						color: 'var(--color-text-maxcontrast)'
