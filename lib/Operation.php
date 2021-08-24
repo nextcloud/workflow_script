@@ -137,7 +137,7 @@ class Operation implements ISpecificOperation {
 		}
 		try {
 			$extra = [];
-			if ($eventName === '\OCP\Files::postRename') {
+			if ($eventName === '\OCP\Files::postRename' || $eventName === '\OCP\Files::postCopy') {
 				/** @var Node $oldNode */
 				[$oldNode, $node] = $event->getSubject();
 				$extra = ['oldFilePath' => $oldNode->getPath()];
