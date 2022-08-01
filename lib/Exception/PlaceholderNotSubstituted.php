@@ -29,9 +29,7 @@ use Exception;
 use Throwable;
 
 class PlaceholderNotSubstituted extends Exception {
-
-	/** @var string */
-	private $placeholder;
+	private string $placeholder;
 
 	public function __construct(string $placeholder, Throwable $previous = null) {
 		parent::__construct('', 0, $previous);

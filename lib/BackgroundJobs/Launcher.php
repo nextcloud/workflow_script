@@ -24,36 +24,23 @@
 namespace OCA\WorkflowScript\BackgroundJobs;
 
 use Exception;
-use OC\BackgroundJob\QueuedJob;
+use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\BackgroundJob\QueuedJob;
 use OC\Files\View;
-use OCP\Files\IRootFolder;
-use OCP\ITempManager;
 use Psr\Log\LoggerInterface;
 
 class Launcher extends QueuedJob {
+	protected LoggerInterface $logger;
 
-	/** @var LoggerInterface */
-	protected $logger;
-	/** @var ITempManager */
-	private $tempManager;
-	/** @var IRootFolder */
-	private $rootFolder;
-
-	/**
-	 * BackgroundJob constructor.
-	 *
-	 * @param LoggerInterface $logger
-	 */
-	public function __construct(LoggerInterface $logger, ITempManager $tempManager, IRootFolder $rootFolder) {
+	public function __construct(ITimeFactory $time, LoggerInterface $logger) {
+		parent::__construct($time);
 		$this->logger = $logger;
-		$this->tempManager = $tempManager;
-		$this->rootFolder = $rootFolder;
 	}
 
 	/**
 	 * @param mixed $argument
 	 */
-	protected function run($argument) {
+	protected function run($argument): void {
 		$command = (string)$argument['command'];
 
 		if (strpos($command, '%f')) {
