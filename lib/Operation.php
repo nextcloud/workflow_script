@@ -25,7 +25,6 @@ namespace OCA\WorkflowScript;
 
 use Exception;
 use InvalidArgumentException;
-use OC;
 use OC\Files\View;
 use OC\User\NoUserException;
 use OCA\Files_Sharing\SharedStorage;
@@ -42,8 +41,8 @@ use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
-use OCP\IConfig;
 use OCP\IL10N;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserSession;
 use OCP\SystemTag\MapperEvent;
@@ -55,38 +54,27 @@ use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
 use UnexpectedValueException;
 
 class Operation implements ISpecificOperation {
-
-	/** @var IManager */
-	private $workflowEngineManager;
-	/** @var IJobList */
-	private $jobList;
-	/** @var IL10N */
-	private $l;
-	/** @var IUserSession */
-	private $session;
-	/** @var IRootFolder */
-	private $rootFolder;
-	/** @var IConfig */
-	private $config;
-	/** @var LoggerInterface */
-	private $logger;
+	private IJobList $jobList;
+	private IL10N $l;
+	private IUserSession $session;
+	private IRootFolder $rootFolder;
+	private LoggerInterface $logger;
+	private IURLGenerator $urlGenerator;
 
 	public function __construct(
-		IManager $workflowEngineManager,
 		IJobList $jobList,
 		IL10N $l,
 		IUserSession $session,
 		IRootFolder $rootFolder,
-		IConfig $config,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		IURLGenerator $urlGenerator
 	) {
-		$this->workflowEngineManager = $workflowEngineManager;
 		$this->jobList = $jobList;
 		$this->l = $l;
 		$this->session = $session;
 		$this->rootFolder = $rootFolder;
-		$this->config = $config;
 		$this->logger = $logger;
+		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
@@ -122,7 +110,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getIcon(): string {
-		return OC::$server->getURLGenerator()->imagePath('workflow_script', 'app.svg');
+		return $this->urlGenerator->imagePath('workflow_script', 'app.svg');
 	}
 
 	public function isAvailableForScope(int $scope): bool {
@@ -177,6 +165,7 @@ class Operation implements ISpecificOperation {
 							'exception' => $e,
 						]
 					);
+					continue;
 				}
 				$args = ['command' => $command];
 				if (strpos($command, '%f')) {
