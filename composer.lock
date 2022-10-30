@@ -530,12 +530,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "20476bc52a77f41fbebdb95ecdc6dbe290263305"
+                "reference": "c1b51b2b58812de66268de5cfae4251487235d70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/20476bc52a77f41fbebdb95ecdc6dbe290263305",
-                "reference": "20476bc52a77f41fbebdb95ecdc6dbe290263305",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/c1b51b2b58812de66268de5cfae4251487235d70",
+                "reference": "c1b51b2b58812de66268de5cfae4251487235d70",
                 "shasum": ""
             },
             "require": {
@@ -562,9 +562,10 @@
             ],
             "description": "Composer package containing Nextcloud's public API (classes, interfaces)",
             "support": {
+                "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/stable25"
             },
-            "time": "2022-10-01T01:06:18+00:00"
+            "time": "2022-10-28T00:52:46+00:00"
         },
         {
             "name": "php-cs-fixer/diff",
