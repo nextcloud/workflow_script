@@ -530,12 +530,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nextcloud-deps/ocp.git",
-                "reference": "81fabae31c9bb142d5d0d4d52384fe98d757ab49"
+                "reference": "e57eb6aaa56318399f587969879f96d547e015c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/81fabae31c9bb142d5d0d4d52384fe98d757ab49",
-                "reference": "81fabae31c9bb142d5d0d4d52384fe98d757ab49",
+                "url": "https://api.github.com/repos/nextcloud-deps/ocp/zipball/e57eb6aaa56318399f587969879f96d547e015c6",
+                "reference": "e57eb6aaa56318399f587969879f96d547e015c6",
                 "shasum": ""
             },
             "require": {
@@ -566,7 +566,7 @@
                 "issues": "https://github.com/nextcloud-deps/ocp/issues",
                 "source": "https://github.com/nextcloud-deps/ocp/tree/master"
             },
-            "time": "2022-11-04T00:49:09+00:00"
+            "time": "2022-11-23T00:37:22+00:00"
         },
         {
             "name": "php-cs-fixer/diff",
