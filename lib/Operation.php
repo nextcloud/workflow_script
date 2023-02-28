@@ -51,7 +51,6 @@ use OCP\WorkflowEngine\IManager;
 use OCP\WorkflowEngine\IRuleMatcher;
 use OCP\WorkflowEngine\ISpecificOperation;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\GenericEvent as LegacyGenericEvent;
 use UnexpectedValueException;
 
 class Operation implements ISpecificOperation {
@@ -120,7 +119,6 @@ class Operation implements ISpecificOperation {
 
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
 		if (!$event instanceof GenericEvent
-			&& !$event instanceof LegacyGenericEvent
 			&& !$event instanceof MapperEvent) {
 			return;
 		}
@@ -218,7 +216,7 @@ class Operation implements ISpecificOperation {
 				$nodeID = $node->getId();
 			} catch (InvalidPathException | NotFoundException $e) {
 			}
-			$command = str_replace('%i', escapeshellarg($nodeID), $command);
+			$command = str_replace('%s', escapeshellarg((string)$nodeID), $command);
 		}
 
 		if (strpos($command, '%a')) {

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+  <file src="lib/BackgroundJobs/Launcher.php">
+    <ForbiddenCode occurrences="1">
+      <code>shell_exec($wrapper)</code>
+    </ForbiddenCode>
+    <UndefinedClass occurrences="1">
+      <code>View</code>
+    </UndefinedClass>
+  </file>
+  <file src="lib/Operation.php">
+    <ForbiddenCode occurrences="1">
+      <code>shell_exec('command -v ' . escapeshellarg($scriptName))</code>
+    </ForbiddenCode>
+    <MissingDependency occurrences="5">
+      <code>$this-&gt;rootFolder</code>
+      <code>$this-&gt;rootFolder</code>
+      <code>$this-&gt;rootFolder</code>
+      <code>IRootFolder</code>
+      <code>IRootFolder</code>
+    </MissingDependency>
+    <UndefinedClass occurrences="5">
+      <code>File</code>
+      <code>GroupFolderStorage</code>
+      <code>NoUserException</code>
+      <code>SharedStorage</code>
+      <code>View</code>
+    </UndefinedClass>
+  </file>
+</files>
