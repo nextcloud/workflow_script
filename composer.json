@@ -1,8 +1,20 @@
 {
+	"config": {
+		"optimize-autoloader": true,
+		"classmap-authoritative": true,
+		"platform": {
+			"php": "8.0"
+		},
+		"autoloader-suffix": "WorkflowScript"
+	},
+	"autoload": {
+		"psr-4": {
+			"OCA\\WorkflowScript\\": "lib/"
+		}
+	},
 	"autoload-dev": {
 		"psr-4": {
-			"OCP\\": "vendor/nextcloud/ocp/OCP",
-			"OCA\\WorkflowScript\\": "lib/"
+			"OCP\\": "vendor/nextcloud/ocp/OCP"
 		}
 	},
 	"scripts": {
