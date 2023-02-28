@@ -30,6 +30,7 @@ use OC\User\NoUserException;
 use OCA\Files_Sharing\SharedStorage;
 use OCA\GroupFolders\Mount\GroupFolderStorage;
 use OCA\WorkflowEngine\Entity\File;
+use OCA\WorkflowScript\AppInfo\Application;
 use OCA\WorkflowScript\BackgroundJobs\Launcher;
 use OCA\WorkflowScript\Exception\PlaceholderNotSubstituted;
 use OCP\BackgroundJob\IJobList;
@@ -110,7 +111,7 @@ class Operation implements ISpecificOperation {
 	}
 
 	public function getIcon(): string {
-		return $this->urlGenerator->imagePath('workflow_script', 'app.svg');
+		return $this->urlGenerator->imagePath(Application::APPID, 'app.svg');
 	}
 
 	public function isAvailableForScope(int $scope): bool {
@@ -158,7 +159,7 @@ class Operation implements ISpecificOperation {
 					$this->logger->warning(
 						'Could not substitute {placeholder} in {command} with node {node}',
 						[
-							'app' => 'workflow_script',
+							'app' => Application::APPID,
 							'placeholder' => $e->getPlaceholder(),
 							'command' => $match['operation'],
 							'node' => $node,
@@ -180,7 +181,7 @@ class Operation implements ISpecificOperation {
 	/**
 	 * @throws PlaceholderNotSubstituted
 	 */
-	protected function buildCommand(string $template, Node $node, string $event, array $extra = []) {
+	protected function buildCommand(string $template, Node $node, string $event, array $extra = []): string {
 		$command = $template;
 
 		if (strpos($command, '%e')) {
@@ -258,7 +259,7 @@ class Operation implements ISpecificOperation {
 			$storage = $node->getStorage();
 		} catch (NotFoundException | InvalidPathException $e) {
 			$context = [
-				'app' => 'workflow_script',
+				'app' => Application::APPID,
 				'exception' => $e,
 				'node' => $node,
 			];
@@ -282,7 +283,7 @@ class Operation implements ISpecificOperation {
 				$this->logger->warning(
 					'Groupfolder path does not contain __groupfolders. File ID: {fid}, Node path: {path}, absolute path: {abspath}',
 					[
-						'app' => 'workflow_script',
+						'app' => Application::APPID,
 						'fid' => $nodeID,
 						'path' => $node->getPath(),
 						'abspath' => $absPath,
@@ -304,10 +305,10 @@ class Operation implements ISpecificOperation {
 			$ncRelPath = $newNode->getPath();
 		} else {
 			$ncRelPath = $node->getPath();
-			if (strpos($node->getPath(), $owner->getUID()) !== 0) {
+			if (!str_starts_with($node->getPath(), $owner->getUID())) {
 				$nodes = $this->rootFolder->getById($nodeID);
 				foreach ($nodes as $testNode) {
-					if (strpos($node->getPath(), $owner->getUID()) === 0) {
+					if (str_starts_with($node->getPath(), $owner->getUID())) {
 						$ncRelPath = $testNode;
 						break;
 					}
