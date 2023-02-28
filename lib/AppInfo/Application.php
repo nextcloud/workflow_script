@@ -31,12 +31,13 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
 class Application extends App implements IBootstrap {
+	public const APPID = 'workflow_script';
 
 	/**
 	 * Application constructor.
 	 */
 	public function __construct() {
-		parent::__construct('workflow_script');
+		parent::__construct(self::APPID);
 	}
 
 	public function register(IRegistrationContext $context): void {

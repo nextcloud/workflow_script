@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace OCA\WorkflowScript\Listener;
 
+use OCA\WorkflowScript\AppInfo\Application;
 use OCA\WorkflowScript\Operation;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
@@ -46,8 +47,9 @@ class RegisterFlowOperationsListener implements IEventListener {
 		if (!$event instanceof RegisterOperationsEvent) {
 			return;
 		}
+
 		$operation = $this->container->get(Operation::class);
 		$event->registerOperation($operation);
-		Util::addScript('workflow_script', 'admin');
+		Util::addScript(Application::APPID, 'admin');
 	}
 }

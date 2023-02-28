@@ -24,6 +24,7 @@
 namespace OCA\WorkflowScript\BackgroundJobs;
 
 use Exception;
+use OCA\WorkflowScript\AppInfo\Application;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\QueuedJob;
 use OC\Files\View;
@@ -50,7 +51,7 @@ class Launcher extends QueuedJob {
 				$tmpFile = $view->toTmpFile(basename($path));
 			} catch (Exception $e) {
 				$this->logger->warning($e->getMessage(), [
-					'app' => 'workflow_script',
+					'app' => Application::APPID,
 					'exception' => $e
 				]);
 				return;
@@ -63,7 +64,7 @@ class Launcher extends QueuedJob {
 		$wrapper = 'sh -c ' . escapeshellarg($command) . ' >/dev/null &';
 		$this->logger->info(
 			'executing {script}',
-			['app' => 'workflow_script', 'script' => $wrapper]
+			['app' => Application::APPID, 'script' => $wrapper]
 		);
 		shell_exec($wrapper);
 	}
