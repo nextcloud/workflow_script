@@ -216,7 +216,7 @@ class Operation implements ISpecificOperation {
 				$nodeID = $node->getId();
 			} catch (InvalidPathException | NotFoundException $e) {
 			}
-			$command = str_replace('%s', escapeshellarg((string)$nodeID), $command);
+			$command = str_replace('%i', escapeshellarg((string)$nodeID), $command);
 		}
 
 		if (strpos($command, '%a')) {
