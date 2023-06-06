@@ -25,6 +25,7 @@ namespace OCA\WorkflowScript;
 
 use Exception;
 use InvalidArgumentException;
+use OC\Files\Storage\Local;
 use OC\Files\View;
 use OC\User\NoUserException;
 use OCA\Files_Sharing\SharedStorage;
@@ -195,9 +196,14 @@ class Operation implements ISpecificOperation {
 
 		if (strpos($command, '%f')) {
 			try {
+				$fullPath = null;
 				$view = new View();
 				if ($node instanceof Folder) {
-					$fullPath = $view->getLocalFolder($node->getPath());
+					$storage = $node->getStorage();
+					if ($storage->instanceOfStorage(Local::class)) {
+						/** @var Local $storage */
+						$fullPath = $storage->getSourcePath($node->getPath());
+					}
 				} else {
 					$fullPath = $view->getLocalFile($node->getPath());
 				}
