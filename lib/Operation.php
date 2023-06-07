@@ -36,7 +36,7 @@ use OCA\WorkflowScript\Exception\PlaceholderNotSubstituted;
 use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\GenericEvent;
-use OCP\Files\Folder;
+use OCP\Files\File as FileNode;
 use OCP\Files\InvalidPathException;
 use OCP\Files\IRootFolder;
 use OCP\Files\Node;
@@ -145,7 +145,7 @@ class Operation implements ISpecificOperation {
 
 			// '', admin, 'files', 'path/to/file.txt'
 			[, , $folder,] = explode('/', $node->getPath(), 4);
-			if ($folder !== 'files' || $node instanceof Folder) {
+			if ($folder !== 'files' || !($node instanceof FileNode)) {
 				return;
 			}
 
@@ -196,9 +196,7 @@ class Operation implements ISpecificOperation {
 		if (strpos($command, '%f')) {
 			try {
 				$view = new View();
-				if ($node instanceof Folder) {
-					$fullPath = $view->getLocalFolder($node->getPath());
-				} else {
+				if ($node instanceof FileNode) {
 					$fullPath = $view->getLocalFile($node->getPath());
 				}
 				if ($fullPath === null) {
