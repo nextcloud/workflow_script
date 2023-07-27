@@ -24,10 +24,10 @@
 namespace OCA\WorkflowScript\BackgroundJobs;
 
 use Exception;
+use OC\Files\View;
 use OCA\WorkflowScript\AppInfo\Application;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\QueuedJob;
-use OC\Files\View;
 use Psr\Log\LoggerInterface;
 
 class Launcher extends QueuedJob {
