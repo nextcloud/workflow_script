@@ -11,5 +11,3 @@ updates:
   labels:
     - 3. to review
     - dependencies
-  reviewers:
-    - nextcloud/server-dependabot
