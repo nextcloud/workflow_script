@@ -29,6 +29,6 @@
 	"require-dev": {
 		"nextcloud/coding-standard": "^1.0.0",
 		"nextcloud/ocp": "dev-master",
-		"vimeo/psalm": "^4"
+		"vimeo/psalm": "^5"
 	}
 }
