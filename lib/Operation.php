@@ -273,7 +273,7 @@ class Operation implements ISpecificOperation {
 
 		if (isset($storage) && $storage->instanceOfStorage(GroupFolderStorage::class)) {
 			// group folders are always located within $DATADIR/__groupfolders/
-			$absPath = $storage->getLocalFile($node->getPath());
+			$absPath = $storage->getLocalFile($node->getInternalPath());
 			$pos = strpos($absPath, '/__groupfolders/');
 			// if the string cannot be found, the fallback is absolute path
 			// it should never happen #famousLastWords
