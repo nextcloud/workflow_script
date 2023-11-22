@@ -42,7 +42,7 @@ Events for files and folders are triggered by file system operations. An operati
 
 All plain text files should be passed to a tool that collects statistics of the writing style of a document and writes them back to a specified mount on the host, in a subfolder that matches the actor's ID, and filename consisting of the basename plus ".style" appended:
 
-![pass a file to style and write back the results](./screenshots/flow_ui.png)  
+![pass a file to style and write back the results](./screenshots/flow-ui.png)  
 
 ```
 style -L de %f > /Lektorat/%a/$(basename %n).style
