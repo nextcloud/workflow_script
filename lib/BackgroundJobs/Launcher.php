@@ -59,7 +59,7 @@ class Launcher extends QueuedJob {
 			$command = str_replace('%f', escapeshellarg($tmpFile), $command);
 		}
 
-		// with wrapping sh around the the command, we leave any redirects in tact,
+		// with wrapping sh around the command, we leave any redirects intact,
 		// but ensure that the script is not blocking Nextcloud's execution
 		$wrapper = 'sh -c ' . escapeshellarg($command) . ' >/dev/null &';
 		$this->logger->info(
