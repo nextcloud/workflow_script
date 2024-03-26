@@ -172,7 +172,7 @@ class Operation implements ISpecificOperation {
 				}
 				$this->jobList->add(Launcher::class, $args);
 			}
-		} catch (NotFoundException $e) {
+		} catch (NotFoundException) {
 		}
 	}
 
@@ -199,11 +199,11 @@ class Operation implements ISpecificOperation {
 				if ($node instanceof FileNode) {
 					$fullPath = $view->getLocalFile($node->getPath());
 				}
-				if ($fullPath === null) {
+				if (!isset($fullPath) || $fullPath === false) {
 					throw new InvalidArgumentException();
 				}
 				$command = str_replace('%f', escapeshellarg($fullPath), $command);
-			} catch (Exception $e) {
+			} catch (Exception) {
 				throw new InvalidArgumentException('Could not determine full path');
 			}
 		}
@@ -212,7 +212,7 @@ class Operation implements ISpecificOperation {
 			$nodeID = -1;
 			try {
 				$nodeID = $node->getId();
-			} catch (InvalidPathException | NotFoundException $e) {
+			} catch (InvalidPathException | NotFoundException) {
 			}
 			$command = str_replace('%i', escapeshellarg((string)$nodeID), $command);
 		}
