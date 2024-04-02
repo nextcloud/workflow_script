@@ -21,6 +21,6 @@
 	<repository type="git">https://github.com/nextcloud/workflow_script.git</repository>
 	<screenshot>https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/flow-ui.png</screenshot>
 	<dependencies>
-		<nextcloud min-version="29" max-version="29" />
+		<nextcloud min-version="30" max-version="30" />
 	</dependencies>
 </info>
