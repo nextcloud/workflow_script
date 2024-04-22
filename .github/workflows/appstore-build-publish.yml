@@ -130,9 +130,18 @@ jobs:
           wget --quiet https://download.nextcloud.com/server/releases/latest-$NCVERSION.zip
           unzip latest-$NCVERSION.zip
 
+      - name: Checkout server based on PHP version fallback
+        if: ${{ steps.server-checkout.outcome != 'success' }}
+        continue-on-error: true
+        id: server-checkout-by-phpv
+        run: |
+          DOWNLOADURL=$(curl https://raw.githubusercontent.com/nextcloud-releases/updater_server/master/config/config.php | grep -B3 "minPHPVersion' => '{{ steps.php-versions.outputs.php-min }}'"  | head -n 3 | grep downloadUrl | grep -oE "https://[^']*")
+          wget --quiet -O nextcloud.zip "${DOWNLOADURL}"
+          unzip nextcloud.zip
+
       - name: Checkout server master fallback
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-        if: ${{ steps.server-checkout.outcome != 'success' }}
+        if: ${{ steps.server-checkout-by-phpv.outcome != 'success' }}
         with:
           submodules: true
           repository: nextcloud/server
