@@ -212,7 +212,7 @@ class Operation implements ISpecificOperation {
 			$nodeID = -1;
 			try {
 				$nodeID = $node->getId();
-			} catch (InvalidPathException | NotFoundException) {
+			} catch (InvalidPathException|NotFoundException) {
 			}
 			$command = str_replace('%i', escapeshellarg((string)$nodeID), $command);
 		}
@@ -253,7 +253,7 @@ class Operation implements ISpecificOperation {
 		try {
 			$nodeID = $node->getId();
 			$storage = $node->getStorage();
-		} catch (NotFoundException | InvalidPathException $e) {
+		} catch (NotFoundException|InvalidPathException $e) {
 			$context = [
 				'app' => Application::APPID,
 				'exception' => $e,
@@ -290,7 +290,7 @@ class Operation implements ISpecificOperation {
 		} elseif (isset($storage) && $storage->instanceOfStorage(SharedStorage::class)) {
 			try {
 				$folder = $this->rootFolder->getUserFolder($owner->getUID());
-			} catch (NotPermittedException | NoUserException $e) {
+			} catch (NotPermittedException|NoUserException $e) {
 				throw new PlaceholderNotSubstituted('n', $e);
 			}
 			$nodes = $folder->getById($nodeID);
