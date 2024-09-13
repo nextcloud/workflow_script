@@ -1,3 +1,7 @@
+<!--
+  - SPDX-FileCopyrightText: 2018 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 # Nextcloud Workflow Script app
 
 This app enables Nextcloud to pass on files to external scripts when they were created or changed. By utilizing the workflow engine it allows Nextcloud administrators to define rules upon which matching files are enqueued to be run against a specified script. Eventually, the command is executed in a background job. 
