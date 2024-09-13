@@ -4,6 +4,8 @@
 -->
 # Nextcloud Workflow Script app
 
+[![REUSE status](https://api.reuse.software/badge/github.com/nextcloud/workflow_script)](https://api.reuse.software/info/github.com/nextcloud/workflow_script)
+
 This app enables Nextcloud to pass on files to external scripts when they were created or changed. By utilizing the workflow engine it allows Nextcloud administrators to define rules upon which matching files are enqueued to be run against a specified script. Eventually, the command is executed in a background job. 
 
 Learn more about workflows on https://nextcloud.com/workflow
