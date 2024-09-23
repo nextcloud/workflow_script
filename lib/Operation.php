@@ -50,7 +50,7 @@ class Operation implements ISpecificOperation {
 		IUserSession $session,
 		IRootFolder $rootFolder,
 		LoggerInterface $logger,
-		IURLGenerator $urlGenerator
+		IURLGenerator $urlGenerator,
 	) {
 		$this->jobList = $jobList;
 		$this->l = $l;
