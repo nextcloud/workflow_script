@@ -45,7 +45,7 @@ class Launcher extends QueuedJob {
 
 		// with wrapping sh around the command, we leave any redirects intact,
 		// but ensure that the script is not blocking Nextcloud's execution
-		$wrapper = 'sh -c ' . escapeshellarg($command) . ' >/dev/null &';
+		$wrapper = '/bin/sh -c ' . escapeshellarg($command) . ' >/dev/null &';
 		$this->logger->info(
 			'executing {script}',
 			['app' => Application::APPID, 'script' => $wrapper]
