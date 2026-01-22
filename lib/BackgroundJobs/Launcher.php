@@ -14,6 +14,9 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\QueuedJob;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @psalm-api
+ */
 class Launcher extends QueuedJob {
 	protected LoggerInterface $logger;
 
@@ -25,6 +28,7 @@ class Launcher extends QueuedJob {
 	/**
 	 * @param mixed $argument
 	 */
+	#[\Override]
 	protected function run($argument): void {
 		$command = (string)$argument['command'];
 

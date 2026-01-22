@@ -14,6 +14,9 @@ use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\WorkflowEngine\Events\RegisterOperationsEvent;
 
+/**
+ * @psalm-api
+ */
 class Application extends App implements IBootstrap {
 	public const APPID = 'workflow_script';
 
@@ -24,10 +27,12 @@ class Application extends App implements IBootstrap {
 		parent::__construct(self::APPID);
 	}
 
+	#[\Override]
 	public function register(IRegistrationContext $context): void {
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
 	}
 
+	#[\Override]
 	public function boot(IBootContext $context): void {
 	}
 }

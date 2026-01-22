@@ -37,34 +37,26 @@ use OCP\WorkflowEngine\ISpecificOperation;
 use Psr\Log\LoggerInterface;
 use UnexpectedValueException;
 
+/**
+ * @psalm-api
+ */
 class Operation implements ISpecificOperation {
-	private IJobList $jobList;
-	private IL10N $l;
-	private IUserSession $session;
-	private IRootFolder $rootFolder;
-	private LoggerInterface $logger;
-	private IURLGenerator $urlGenerator;
 
 	public function __construct(
-		IJobList $jobList,
-		IL10N $l,
-		IUserSession $session,
-		IRootFolder $rootFolder,
-		LoggerInterface $logger,
-		IURLGenerator $urlGenerator,
+		private IJobList $jobList,
+		private IL10N $l,
+		private IUserSession $session,
+		private IRootFolder $rootFolder,
+		private LoggerInterface $logger,
+		private IURLGenerator $urlGenerator,
 	) {
-		$this->jobList = $jobList;
-		$this->l = $l;
-		$this->session = $session;
-		$this->rootFolder = $rootFolder;
-		$this->logger = $logger;
-		$this->urlGenerator = $urlGenerator;
 	}
 
 	/**
 	 * @throws UnexpectedValueException
 	 * @since 9.1
 	 */
+	#[\Override]
 	public function validateOperation(string $name, array $checks, string $operation): void {
 		if (empty($operation)) {
 			throw new UnexpectedValueException($this->l->t('Please provide a script name'));
@@ -85,22 +77,27 @@ class Operation implements ISpecificOperation {
 		return is_executable($scriptName);
 	}
 
+	#[\Override]
 	public function getDisplayName(): string {
 		return $this->l->t('Run script');
 	}
 
+	#[\Override]
 	public function getDescription(): string {
 		return $this->l->t('Pass files to external scripts for processing outside of Nextcloud');
 	}
 
+	#[\Override]
 	public function getIcon(): string {
 		return $this->urlGenerator->imagePath(Application::APPID, 'app.svg');
 	}
 
+	#[\Override]
 	public function isAvailableForScope(int $scope): bool {
 		return $scope === IManager::SCOPE_ADMIN;
 	}
 
+	#[\Override]
 	public function onEvent(string $eventName, Event $event, IRuleMatcher $ruleMatcher): void {
 		if (!$event instanceof GenericEvent
 			&& !$event instanceof MapperEvent) {
@@ -116,7 +113,7 @@ class Operation implements ISpecificOperation {
 				if ($event->getObjectType() !== 'files') {
 					return;
 				}
-				$nodes = $this->rootFolder->getById($event->getObjectId());
+				$nodes = $this->rootFolder->getById((int)$event->getObjectId());
 				if (!isset($nodes[0])) {
 					return;
 				}
@@ -300,6 +297,7 @@ class Operation implements ISpecificOperation {
 		return $ncRelPath;
 	}
 
+	#[\Override]
 	public function getEntityId(): string {
 		return File::class;
 	}

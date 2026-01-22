@@ -3,3 +3,4 @@
 build/
 vendor/
 /composer.lock
+.php-cs-fixer.cache
