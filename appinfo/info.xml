@@ -9,7 +9,7 @@
 	<name>Workflow external scripts</name>
 	<summary>Rule based processing of files through specified external scripts</summary>
 	<description>Pass files on to external scripts depending on a defined set of rules.</description>
-	<version>4.0.0-dev.0</version>
+	<version>5.0.0-dev.0</version>
 	<licence>agpl</licence>
 	<author mail="blizzz@arthur-schiwon.de">Arthur Schiwon</author>
 	<namespace>WorkflowScript</namespace>
@@ -25,6 +25,6 @@
 	<repository type="git">https://github.com/nextcloud/workflow_script.git</repository>
 	<screenshot>https://raw.githubusercontent.com/nextcloud/workflow_script/master/screenshots/flow-ui.png</screenshot>
 	<dependencies>
-		<nextcloud min-version="33" max-version="33" />
+		<nextcloud min-version="34" max-version="34" />
 	</dependencies>
 </info>
