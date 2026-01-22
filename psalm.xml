@@ -5,7 +5,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 	errorBaseline="tests/psalm-baseline.xml"
-	phpVersion="8.1"
+	phpVersion="8.2"
 >
 	<projectFiles>
 		<directory name="lib" />
@@ -16,20 +16,7 @@
 	<extraFiles>
 		<directory name="vendor" />
 	</extraFiles>
-	<issueHandlers>
-		<UndefinedClass>
-			<errorLevel type="suppress">
-				<referencedClass name="OC" />
-				<referencedClass name="Doctrine\DBAL\Types\Types" />
-			</errorLevel>
-		</UndefinedClass>
-		<UndefinedDocblockClass>
-			<errorLevel type="suppress">
-				<referencedClass name="Doctrine\DBAL\Schema\Schema" />
-				<referencedClass name="Doctrine\DBAL\Schema\SchemaException" />
-				<referencedClass name="Doctrine\DBAL\Driver\Statement" />
-				<referencedClass name="Doctrine\DBAL\Schema\Table" />
-			</errorLevel>
-		</UndefinedDocblockClass>
-	</issueHandlers>
+	<stubs>
+		<file name="tests/stubs/oc_hooks_emitter.php" />
+	</stubs>
 </psalm>

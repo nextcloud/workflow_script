@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
+<files psalm-version="6.14.3@d0b040a91f280f071c1abcb1b77ce3822058725a">
   <file src="lib/BackgroundJobs/Launcher.php">
-    <ForbiddenCode occurrences="1">
-      <code>shell_exec($wrapper)</code>
+    <ForbiddenCode>
+      <code><![CDATA[shell_exec($wrapper)]]></code>
     </ForbiddenCode>
-    <UndefinedClass occurrences="1">
-      <code>View</code>
+    <UndefinedClass>
+      <code><![CDATA[View]]></code>
     </UndefinedClass>
   </file>
   <file src="lib/Operation.php">
-    <ForbiddenCode occurrences="1">
-      <code>shell_exec('command -v ' . escapeshellarg($scriptName))</code>
+    <ForbiddenCode>
+      <code><![CDATA[shell_exec('command -v ' . escapeshellarg($scriptName))]]></code>
     </ForbiddenCode>
-    <MissingDependency occurrences="5">
-      <code>$this-&gt;rootFolder</code>
-      <code>$this-&gt;rootFolder</code>
-      <code>$this-&gt;rootFolder</code>
-      <code>IRootFolder</code>
-      <code>IRootFolder</code>
-    </MissingDependency>
-    <UndefinedClass occurrences="5">
-      <code>File</code>
-      <code>GroupFolderStorage</code>
-      <code>NoUserException</code>
-      <code>SharedStorage</code>
-      <code>View</code>
+    <UndefinedClass>
+      <code><![CDATA[File]]></code>
+      <code><![CDATA[GroupFolderStorage]]></code>
+      <code><![CDATA[NoUserException]]></code>
+      <code><![CDATA[SharedStorage]]></code>
+      <code><![CDATA[View]]></code>
     </UndefinedClass>
   </file>
 </files>
