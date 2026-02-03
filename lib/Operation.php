@@ -113,12 +113,10 @@ class Operation implements ISpecificOperation {
 				if ($event->getObjectType() !== 'files') {
 					return;
 				}
-				$nodes = $this->rootFolder->getById((int)$event->getObjectId());
-				if (!isset($nodes[0])) {
+				$node = $this->rootFolder->getFirstNodeById((int)$event->getObjectId());
+				if ($node === null) {
 					return;
 				}
-				$node = $nodes[0];
-				unset($nodes);
 			} else {
 				$node = $event->getSubject();
 			}
