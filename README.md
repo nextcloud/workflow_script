@@ -30,6 +30,9 @@ When defining the script, you can specify one of the following placeholders that
 
 When no placeholder was specified, then the exact command as given is being executed.
 
+### Security
+Do not wrap placeholders in quotes, as they are already quoted by the app. Wrapping them in quotes can neutralize this and may allow command execution via filenames. Files containing `$(` or `` ` `` in their filename will be skipped.
+
 ### Hints
 
 Events for files and folders are triggered by file system operations. An operation like
