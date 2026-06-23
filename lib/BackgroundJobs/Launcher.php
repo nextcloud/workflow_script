@@ -25,6 +25,7 @@
 namespace OCA\WorkflowScript\BackgroundJobs;
 
 use Exception;
+use InvalidArgumentException;
 use OC\Files\View;
 use OCA\WorkflowScript\AppInfo\Application;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -48,8 +49,7 @@ class Launcher extends QueuedJob {
 		if (strpos($command, '%f')) {
 			$path = isset($argument['path']) ? (string)$argument['path'] : '';
 			try {
-				$view = new View(dirname($path));
-				$tmpFile = $view->toTmpFile(basename($path));
+				$command = str_replace('%f', escapeshellarg($this->resolveLocalPath($path)), $command);
 			} catch (Exception $e) {
 				$this->logger->warning($e->getMessage(), [
 					'app' => Application::APPID,
@@ -57,7 +57,6 @@ class Launcher extends QueuedJob {
 				]);
 				return;
 			}
-			$command = str_replace('%f', escapeshellarg($tmpFile), $command);
 		}
 
 		// with wrapping sh around the command, we leave any redirects intact,
@@ -68,5 +67,25 @@ class Launcher extends QueuedJob {
 			['app' => Application::APPID, 'script' => $wrapper]
 		);
 		shell_exec($wrapper);
+	}
+
+	/**
+	 * @throws InvalidArgumentException
+	 */
+	private function resolveLocalPath(string $path): string {
+		try {
+			$view = new View();
+			$localFile = $view->getLocalFile($path);
+			if ($localFile !== false && file_exists($localFile)) {
+				return $localFile;
+			}
+			$tmpFile = $view->toTmpFile($path);
+			if ($tmpFile === false) {
+				throw new InvalidArgumentException();
+			}
+			return $tmpFile;
+		} catch (Exception) {
+			throw new InvalidArgumentException('Could not resolve local path for: ' . $path);
+		}
 	}
 }
