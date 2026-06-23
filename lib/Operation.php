@@ -7,9 +7,6 @@
 
 namespace OCA\WorkflowScript;
 
-use Exception;
-use InvalidArgumentException;
-use OC\Files\View;
 use OC\User\NoUserException;
 use OCA\Files_Sharing\SharedStorage;
 use OCA\GroupFolders\Mount\GroupFolderStorage;
@@ -134,6 +131,21 @@ class Operation implements ISpecificOperation {
 			}
 
 			$matches = $ruleMatcher->getFlows(false);
+			if (empty($matches)) {
+				return;
+			}
+
+			if (preg_match('/\$\(|`/', $node->getName())) {
+				$this->logger->warning(
+					'Potentially dangerous characters in filename, skipping workflow',
+					[
+						'app' => Application::APPID,
+						'file' => $node->getPath(),
+					]
+				);
+				return;
+			}
+
 			foreach ($matches as $match) {
 				try {
 					$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
@@ -175,21 +187,6 @@ class Operation implements ISpecificOperation {
 			$ncRelPath = $this->replacePlaceholderN($node);
 			$command = str_replace('%n', escapeshellarg($ncRelPath), $command);
 			unset($ncRelPath);
-		}
-
-		if (strpos($command, '%f')) {
-			try {
-				$view = new View();
-				if ($node instanceof FileNode) {
-					$fullPath = $view->getLocalFile($node->getPath());
-				}
-				if (!isset($fullPath) || $fullPath === false) {
-					throw new InvalidArgumentException();
-				}
-				$command = str_replace('%f', escapeshellarg($fullPath), $command);
-			} catch (Exception) {
-				throw new InvalidArgumentException('Could not determine full path');
-			}
 		}
 
 		if (strpos($command, '%i')) {
