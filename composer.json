@@ -3,7 +3,7 @@
 		"optimize-autoloader": true,
 		"classmap-authoritative": true,
 		"platform": {
-			"php": "8.2.27"
+			"php": "8.3.16"
 		},
 		"autoloader-suffix": "WorkflowScript"
 	},
