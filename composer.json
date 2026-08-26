@@ -3,7 +3,7 @@
 		"optimize-autoloader": true,
 		"classmap-authoritative": true,
 		"platform": {
-			"php": "8.2.27"
+			"php": "8.3.16"
 		},
 		"autoloader-suffix": "WorkflowScript"
 	},
@@ -27,7 +27,7 @@
 		"psalm:fix": "psalm --alter --issues=InvalidReturnType,InvalidNullableReturnType,MissingParamType,InvalidFalsableReturnType"
 	},
 	"require-dev": {
-		"nextcloud/ocp": "dev-master",
+		"nextcloud/ocp": "dev-stable35",
 		"vimeo/psalm": "^6.14",
 		"nextcloud/coding-standard": "^1.4"
 	}
