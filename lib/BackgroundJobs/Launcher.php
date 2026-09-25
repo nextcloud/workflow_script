@@ -42,10 +42,18 @@ class Launcher extends QueuedJob {
 	 * @param mixed $argument
 	 */
 	protected function run($argument): void {
-		$command = (string)$argument['command'];
+		if (!isset($argument['template'])) {
+			$this->logger->error('Skipping job: template argument is missing', [
+				'app' => Application::APPID,
+				'argument' => $argument
+			]);
+			return;
+		}
 
-		if (strpos($command, '%f')) {
-			$path = isset($argument['path']) ? (string)$argument['path'] : '';
+		$template = (string)$argument['template'];
+		$replacements = is_array($argument['replacements'] ?? null) ? $argument['replacements'] : [];
+
+		if (isset($argument['path']) && strpos($template, '%f') !== false) {
 			try {
 				$view = new View(dirname($path));
 				$tmpFile = $view->toTmpFile(basename($path));
@@ -58,6 +66,8 @@ class Launcher extends QueuedJob {
 			}
 			$command = str_replace('%f', escapeshellarg($tmpFile), $command);
 		}
+
+		$command = strtr($template, $replacements);
 
 		// with wrapping sh around the command, we leave any redirects intact,
 		// but ensure that the script is not blocking Nextcloud's execution
