@@ -147,23 +147,27 @@ class Operation implements ISpecificOperation {
 			}
 
 			foreach ($matches as $match) {
+				$template = $match['operation'];
 				try {
-					$command = $this->buildCommand($match['operation'], $node, $eventName, $extra);
+					$replacements = $this->buildReplacements($template, $node, $eventName, $extra);
 				} catch (PlaceholderNotSubstituted $e) {
 					$this->logger->warning(
 						'Could not substitute {placeholder} in {command} with node {node}',
 						[
 							'app' => Application::APPID,
 							'placeholder' => $e->getPlaceholder(),
-							'command' => $match['operation'],
+							'command' => $template,
 							'node' => $node,
 							'exception' => $e,
 						]
 					);
 					continue;
 				}
-				$args = ['command' => $command];
-				if (strpos($command, '%f')) {
+				$args = [
+					'template' => $template,
+					'replacements' => $replacements,
+				];
+				if (strpos($template, '%f') !== false) {
 					$args['path'] = $node->getPath();
 				}
 				$this->jobList->add(Launcher::class, $args);
@@ -173,57 +177,52 @@ class Operation implements ISpecificOperation {
 	}
 
 	/**
+	 * @return array<string, string>
 	 * @throws PlaceholderNotSubstituted
 	 */
-	protected function buildCommand(string $template, Node $node, string $event, array $extra = []): string {
-		$command = $template;
+	protected function buildReplacements(string $template, Node $node, string $event, array $extra = []): array {
+		$replacements = [];
 
-		if (strpos($command, '%e')) {
-			$command = str_replace('%e', escapeshellarg($event), $command);
+		if (strpos($template, '%e') !== false) {
+			$replacements['%e'] = escapeshellarg($event);
 		}
 
-		if (strpos($command, '%n')) {
-			// Nextcloud relative-path
-			$ncRelPath = $this->replacePlaceholderN($node);
-			$command = str_replace('%n', escapeshellarg($ncRelPath), $command);
-			unset($ncRelPath);
+		if (strpos($template, '%n') !== false) {
+			$replacements['%n'] = escapeshellarg($this->replacePlaceholderN($node));
 		}
 
-		if (strpos($command, '%i')) {
+		if (strpos($template, '%i') !== false) {
 			$nodeID = -1;
 			try {
 				$nodeID = $node->getId();
 			} catch (InvalidPathException|NotFoundException) {
 			}
-			$command = str_replace('%i', escapeshellarg((string)$nodeID), $command);
+			$replacements['%i'] = escapeshellarg((string)$nodeID);
 		}
 
-		if (strpos($command, '%a')) {
+		if (strpos($template, '%a') !== false) {
 			$user = $this->session->getUser();
 			$userID = '';
 			if ($user instanceof IUser) {
 				$userID = $user->getUID();
 			}
-			$command = str_replace('%a', escapeshellarg($userID), $command);
+			$replacements['%a'] = escapeshellarg($userID);
 		}
 
-		if (strpos($command, '%o')) {
+		if (strpos($template, '%o') !== false) {
 			$user = $node->getOwner();
 			$userID = '';
 			if ($user instanceof IUser) {
 				$userID = $user->getUID();
 			}
-			$command = str_replace('%o', escapeshellarg($userID), $command);
+			$replacements['%o'] = escapeshellarg($userID);
 		}
 
-		if (strpos($command, '%x')) {
-			if (!isset($extra['oldFilePath'])) {
-				$extra['oldFilePath'] = '';
-			}
-			$command = str_replace('%x', escapeshellarg($extra['oldFilePath']), $command);
+		if (strpos($template, '%x') !== false) {
+			$replacements['%x'] = escapeshellarg($extra['oldFilePath'] ?? '');
 		}
 
-		return $command;
+		return $replacements;
 	}
 
 	/**
