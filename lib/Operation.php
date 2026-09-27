@@ -46,6 +46,7 @@ class Operation implements ISpecificOperation {
 		private IRootFolder $rootFolder,
 		private LoggerInterface $logger,
 		private IURLGenerator $urlGenerator,
+		private RequesterContext $requesterContext,
 	) {
 	}
 
@@ -209,6 +210,20 @@ class Operation implements ISpecificOperation {
 				$userID = $user->getUID();
 			}
 			$command = str_replace('%o', escapeshellarg($userID), $command);
+		}
+
+		if (strpos($command, '%r')) {
+			// filled by ApprovalStateChangedListener when the flow was
+			// triggered by an approval state change of the approval app
+			$requesterID = null;
+			try {
+				$requesterID = $this->requesterContext->getRequester($node->getId());
+			} catch (InvalidPathException|NotFoundException) {
+			}
+			if ($requesterID === null) {
+				throw new PlaceholderNotSubstituted('r');
+			}
+			$command = str_replace('%r', escapeshellarg($requesterID), $command);
 		}
 
 		if (strpos($command, '%x')) {
