@@ -18,5 +18,6 @@
 	</extraFiles>
 	<stubs>
 		<file name="tests/stubs/oc_hooks_emitter.php" />
+		<file name="tests/stubs/oca_approval_events_approvalstatechangedevent.php" />
 	</stubs>
 </psalm>
