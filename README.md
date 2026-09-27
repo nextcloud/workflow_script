@@ -24,6 +24,7 @@ When defining the script, you can specify one of the following placeholders that
 %i | file id | *142430*
 %a | actor's user id | *bob*
 %o | owner's user id | *alice*
+%r | approval requester's user id (requires the [approval app](https://github.com/nextcloud/approval), only substituted when the flow is triggered by an approval state change; if no requester is known, the command is not executed and a warning is logged) | *alice*
 %n | nextcloud-relative path | *alice/files/Pictures/Wonderland/20180717_192103.jpg*
 %f | locally available file | */tmp/oc_tmp_m6E6OO-.jpg*
 %x | old nextcloud-relative file path (only on *rename* and *copy*) | *alice/files/Workbench/20180717_192103.jpg*
