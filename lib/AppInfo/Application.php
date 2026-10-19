@@ -7,6 +7,8 @@
 
 namespace OCA\WorkflowScript\AppInfo;
 
+use OCA\Approval\Events\ApprovalStateChangedEvent;
+use OCA\WorkflowScript\Listener\ApprovalStateChangedListener;
 use OCA\WorkflowScript\Listener\RegisterFlowOperationsListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -30,6 +32,8 @@ class Application extends App implements IBootstrap {
 	#[\Override]
 	public function register(IRegistrationContext $context): void {
 		$context->registerEventListener(RegisterOperationsEvent::class, RegisterFlowOperationsListener::class);
+		// the approval app is optional; if it is absent, its event is simply never emitted
+		$context->registerEventListener(ApprovalStateChangedEvent::class, ApprovalStateChangedListener::class);
 	}
 
 	#[\Override]
